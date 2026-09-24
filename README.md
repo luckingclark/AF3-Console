@@ -29,7 +29,7 @@ python -B af3_gui
 
 Real predictions require **Linux + Slurm**, a separately obtained AF3 container, model parameters and databases, and a configured GPU partition. The GUI needs **X11 forwarding**. Complete [installation, configuration, first preview, submission, hardware reference and troubleshooting](docs/usage.en.md) instructions start from environment creation. The public `AF3_Console/config.example.json` contains placeholders; keep your real configuration outside the repository.
 
-Version **0.1.0 — pre-release**, deployment layout updated **2026-09-24**. [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227): **191 tests passed, 0 skipped**. See the [validation record](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/validation.md) for checks performed and remaining gaps. Real Slurm/AF3 execution, a fresh Linux Conda installation, GPU capacity and cross-cluster compatibility still require deployment validation. This repository does not distribute AF3, weights, databases or research datasets.
+Version **0.1.0 — pre-release**, deployment layout updated **2026-09-24**. [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333): **deployment checks and 191 tests passed, 0 skipped**. See the [validation record](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/validation.md) for checks performed and remaining gaps. Real Slurm/AF3 execution, a fresh Linux Conda installation, GPU capacity and cross-cluster compatibility still require deployment validation. This repository does not distribute AF3, weights, databases or research datasets.
 
 ## Author, development and provenance
 

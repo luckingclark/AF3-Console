@@ -29,7 +29,7 @@ python -B af3_gui
 
 实际预测需要 **Linux＋Slurm**、自行取得的 AF3 容器、模型参数、数据库和 GPU 分区；GUI 需要 **X11 转发**。[安装、配置、首次预览、提交、硬件参考和故障排查](usage.zh-CN.md)从创建环境开始说明。公开 `AF3_Console/config.example.json` 仅含占位符，真实配置请放在仓库外。
 
-当前版本 **0.1.0（预发布）**，部署目录与指南更新于 **2026-09-24**。[Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227)：**191 项测试全部通过，0 跳过**。[验收记录](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/validation.md)列出实际完成的检查及待验证事项；真实 Slurm／AF3 运行、全新 Linux Conda 安装、GPU 容量和跨集群兼容性仍需部署验收。本仓库不分发 AF3 引擎、权重、数据库或课题数据。
+当前版本 **0.1.0（预发布）**，部署目录与指南更新于 **2026-09-24**。[Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333)：**部署检查及 191 项测试全部通过，0 跳过**。[验收记录](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/validation.md)列出实际完成的检查及待验证事项；真实 Slurm／AF3 运行、全新 Linux Conda 安装、GPU 容量和跨集群兼容性仍需部署验收。本仓库不分发 AF3 引擎、权重、数据库或课题数据。
 
 ## 作者、开发方式与来源
 
