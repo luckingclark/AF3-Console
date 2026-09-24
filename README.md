@@ -28,7 +28,7 @@ Real predictions require **Linux + Slurm**, a separately obtained AF3 container,
 
 ![Setup with placeholder resources](docs/images/setup-en-light.png)
 
-Version **0.1.0 — pre-release**. See the [validation record](docs/validation.md) for checks performed and remaining gaps. Real Slurm/AF3 execution, a fresh Linux Conda installation, GPU capacity and cross-cluster compatibility still require deployment validation. This repository does not distribute AF3, weights, databases or research datasets.
+Version **0.1.0 — pre-release**. [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227): **191 tests passed, 0 skipped**. See the [validation record](docs/validation.md) for checks performed and remaining gaps. Real Slurm/AF3 execution, a fresh Linux Conda installation, GPU capacity and cross-cluster compatibility still require deployment validation. This repository does not distribute AF3, weights, databases or research datasets.
 
 ## Author, development and provenance
 

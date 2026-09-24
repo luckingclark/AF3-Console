@@ -28,7 +28,7 @@ python -B af3_gui
 
 ![资源占位符设置页](docs/images/setup-zh-light.png)
 
-当前版本 **0.1.0（预发布）**。[验收记录](docs/validation.md)列出实际完成的检查及待验证事项；真实 Slurm／AF3 运行、全新 Linux Conda 安装、GPU 容量和跨集群兼容性仍需部署验收。本仓库不分发 AF3 引擎、权重、数据库或课题数据。
+当前版本 **0.1.0（预发布）**。[Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227)：**191 项测试全部通过，0 跳过**。[验收记录](docs/validation.md)列出实际完成的检查及待验证事项；真实 Slurm／AF3 运行、全新 Linux Conda 安装、GPU 容量和跨集群兼容性仍需部署验收。本仓库不分发 AF3 引擎、权重、数据库或课题数据。
 
 ## 作者、开发方式与来源
 

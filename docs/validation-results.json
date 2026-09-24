@@ -22,7 +22,7 @@
   },
   "network_access_required_by_tests": false,
   "real_cluster_tested": false,
-  "linux_ci_executed": false,
+  "linux_ci_executed": true,
   "unchanged_pae_functions_ast_compared": 10,
   "original_baseline_files_unchanged": true,
   "readme_diagrams": {
@@ -35,11 +35,12 @@
     "renderer": "Self-contained SVG in local headless Chromium",
     "github_render_checked": false,
     "source_format": "Mermaid with a deterministic Python SVG generator",
-    "presentation_palette": "light on both page backgrounds"
+    "presentation_palette": "light on both page backgrounds",
+    "github_readme_dom_checked": true
   },
   "release_preparation_review": {
-    "source_files": 80,
-    "runtime_files": 48,
+    "source_files": 79,
+    "runtime_files": 47,
     "unlisted_source_files": 0,
     "private_denylist_audit": "passed"
   },
@@ -51,5 +52,22 @@
     "native_cluster_filesystem_tested": false,
     "empty_field_decision_tested": true,
     "occupied_output_preservation_tested": true
+  },
+  "linux_ci": {
+    "run_id": 35967066227,
+    "job_id": 107527940168,
+    "url": "https://github.com/luckingclark/AF3-Console/actions/runs/35967066227",
+    "tested_commit": "e4e653b3b5ba352d696f481887e292c4d85a4d03",
+    "platform": "Ubuntu 24.04.5",
+    "date": "2026-09-24",
+    "tests_run": 191,
+    "tests_passed": 191,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0,
+    "installation": "Python 3.12 via actions/setup-python; pip requirements-dev.txt; Qt system libraries",
+    "conda_environment_tested": false,
+    "real_cluster_tested": false,
+    "python": "3.12.14"
   }
 }
