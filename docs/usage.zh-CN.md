@@ -1,36 +1,25 @@
 # AF3 Console 使用指南
 
-[English](usage.en.md) · [首页](../README.zh-CN.md) · [输入规范](inputs.zh-CN.md)
+[English](usage.en.md) · [首页](README.zh-CN.md) · [输入规范](#输入规范)
 
-除明确要求切换目录外，下列命令均在解压后的软件目录执行。安装从创建 Conda 环境开始，之后再配置集群资源。
+对应 **0.1.0，2026-09-24 部署版**。从仓库根目录安装环境，再进入 `AF3_Console/` 启动和配置。请整套下载当前 main，勿与 9 月 12 日旧五文件包混用。
 
 ## 安装前需要什么
 
 实际预测需要已有的 **Linux Slurm 集群、AF3 Singularity 容器、模型参数、数据库以及 GPU 资源**。程序、Python 环境和工作目录必须能被计算节点访问。桌面窗口通过 X11 转发显示。
 
-这个仓库提供 UI 和调度脚本，不包含 AF3 引擎、模型参数、数据库、GPU 驱动或完整 Python 环境。打开界面、阅读帮助不需要配置完整集群；正式提交前会检查资源。不同集群和旧版 Linux 的兼容性须分别验证，详见[验收记录](validation.md)。
-
-## 功能与定位
-
-- 表达式或原生 AF3 JSON 输入；完整流程、仅 MSA、仅推理。
-- 两组蛋白或复合物的组合筛选；固定窗口或 PAE 引导的片段扫描。
-- 复用兼容 MSA；保存输入、种子、代码与配置快照。
-- 查看任务状态、从已完成 MSA 继续推理、重试失败任务。
-- 查看排名、指定接口置信度、PAE 和报告；界面支持中文/英文、浅色/深色。
-
-![公开版设置页](images/setup-zh-light.png)
-
-本项目的价值在于集成工作流和桌面操作体验。PAE 分域不是本项目首创；预测置信度和分域结果也不是互作或结构域的实验证明。
+这个仓库提供 UI 和调度脚本，不包含 AF3 引擎、模型参数、数据库、GPU 驱动或完整 Python 环境。打开界面、阅读帮助不需要配置完整集群；正式提交前会检查资源。不同集群和旧版 Linux 的兼容性须分别验证，详见[验收记录](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/validation.md)。
 
 ## 下载和安装
 
-在仓库点击 **Code → Download ZIP** 下载源码，或在正式发布后从 **Releases** 下载精简运行包。解压到登录节点和计算节点都能访问的目录。精简包只是减少开发文件，仍需自行安装 Python 依赖。
+保持分支为 **main**，点击 **Code → Download ZIP**，将解压后的整个目录上传至登录节点和计算节点都能访问的位置。默认下载已是部署版，不需要 source 分支。尚未创建正式 Release；仍需安装 Python 依赖。
 
-在解压目录中执行：
+在解压后的仓库根目录中执行：
 
 ```bash
 conda env create -f environment.yml
 conda activate af3-console
+cd AF3_Console
 python -B af3.py --version
 ```
 
@@ -39,7 +28,8 @@ python -B af3.py --version
 ```bash
 python -m venv /path/to/your/af3-console-env
 source /path/to/your/af3-console-env/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install "PySide6>=6.6,<7" "numpy>=1.26,<3" "pandas>=2.2,<4" "matplotlib>=3.8,<4" "six>=1.16,<2" "python-dateutil>=2.9,<3" "zstandard>=0.23,<1" "qtawesome>=1.3,<2"
+cd /path/to/your/af3-console/AF3_Console
 ```
 
 集群优先采用 Conda。仓库声明依赖范围，不分发开发者完整环境或私人软件源地址；实际验证的依赖版本记录在验收文档中。
@@ -64,9 +54,9 @@ cp config.example.json ~/.config/af3_console/config.json
 | `MSA_PARTITION` / `INF_PARTITION` | 实际 CPU / GPU Slurm 分区 |
 | `CONTAINER_MODULE` | 可选的环境模块名；运行命令已在 PATH 中时留空 |
 
-SSD 缓存和备用 GPU 分区默认关闭。设置保存到用户 JSON，不修改源码；个人配置不可提交到 GitHub。更多路径、环境变量和优先级见[配置说明](configuration.md)。
+SSD 缓存和备用 GPU 分区默认关闭。设置保存到用户 JSON，不修改源码；个人配置不可提交到 GitHub。更多路径、环境变量和优先级见[配置说明](#configuration)。
 
-**MSA 池与备份：** 点击 MSA 缓存路径左侧的 **＋**，可配置 1–3 个独立目录。新产物完成后复制到各备份池；每次启动检查一次各池新增内容，询问后才互相同步。同名冲突保留双方数据，不覆盖、不删除。复用前校验完整性；合法但 `unpairedMsa`、`pairedMsa` 或 `templates` 为空时，提示选择复用、重新计算或取消。详见 [MSA 备份、同步与空字段处理](msa-pools.md)。
+**MSA 池与备份：** 点击 MSA 缓存路径左侧的 **＋**，可配置 1–3 个独立目录。新产物完成后复制到各备份池；每次启动检查一次各池新增内容，询问后才互相同步。同名冲突保留双方数据，不覆盖、不删除。复用前校验完整性；合法但 `unpairedMsa`、`pairedMsa` 或 `templates` 为空时，提示选择复用、重新计算或取消。详见 [MSA 备份、同步与空字段处理](#msa-pools)。
 
 ### “资源上限”的硬件配置参考
 
@@ -102,7 +92,7 @@ SSD 缓存和备用 GPU 分区默认关闭。设置保存到用户 JSON，不修
 ```bash
 ssh -X your_username@your_login_host
 conda activate af3-console
-cd /path/to/your/af3-console
+cd /path/to/your/af3-console/AF3_Console
 python -B af3_gui
 ```
 
@@ -128,15 +118,7 @@ python -B af3.py continue --spec /path/to/your/batch/spec.json
 python -B af3.py retry --spec /path/to/your/batch/spec.json
 ```
 
-更多文件输入示例见 [输入规范](inputs.zh-CN.md)，完整参数说明见 UI 帮助页。
-
-## 模式流程图
-
-**Run** 预测指定的蛋白或复合物；**Pulldown** 筛选两组输入的组合；**Scan** 先按固定窗口或 PAE 引导生成片段，再筛选片段组合。
-
-![Run、Pulldown 与 Scan 总览：三种模式汇合到 MSA、GPU 预测和结果；Scan 包含固定窗口与 PAE 引导。](images/workflow-zh-CN.svg)
-
-图示为完整预测流程。PAE 模式缺少所需的全长单体 PAE 时，会先补算单体预测；阶段选择与 MSA 策略详见 UI 帮助。
+更多文件输入示例见 [输入规范](#输入规范)，完整参数说明见 UI 帮助页。
 
 ## 结果、升级与故障处理
 
@@ -186,20 +168,149 @@ python -B af3.py run --infer-only --json /path/to/your/msa_data/P12345_20260602_
 
 反馈问题前，请删除日志和截图中的课题目标、序列、未公开结果、账号、主机、私人路径及凭据。
 
-## 开发与反馈
 
-问题反馈与修改建议通过 Issues／Pull requests 提交。请先删除日志、截图中的课题名称、序列、未公开结果、私人路径和凭据。精简运行包不包含测试和构建工具，开发请使用源码。
+## 输入规范
 
-完成上述环境安装后执行：
+输入由使用者自行准备；仓库不提供课题数据或供下载的人工数据集。`P12345` 和 `Q12345` 仅为语法占位符，不是生物学示例。正式运行前替换；即使 `--dry-run` 也可能联网解析序列。
+
+| 输入 | 内容与用途 |
+|---|---|
+| UniProt 表达式 | 如单个 `P12345` 或复合物 `P12345+Q12345`；Run 预测指定输入。 |
+| Pulldown 两组输入 | 两组 ID／表达式的组合构成筛选任务；列表语法见 UI 帮助。 |
+| Scan 输入 | 长蛋白和候选伙伴；固定窗口需要窗口长度与重叠长度，PAE 扫描使用单体置信度数据。 |
+| 原生 AF3 输入 JSON | 符合 AF3 输入规范，包含实体与序列；在 GUI 中明确选择或用 `--json /path/to/your/input.json` 指定。 |
+| 已有 MSA 产物 | AF3 `*_data.json` 及完整目录和引用的伴随文件；保留原生或带时间戳的目录。复用前检查格式、序列和必需字段；合法空 MSA／模板字段仍需用户决定复用或重算。 |
+| 非配对 MSA | `P12345:msa=/path/to/your/alignment.a3m`，需与选定序列匹配。 |
+| 单体 PAE | `P12345:pae=/path/to/your/confidences.json`，为对应序列的 AF3 PAE 置信度 JSON。 |
+| 模板 | `P12345:tpl=/path/to/your/template.cif:0,1:0,1`，模板 mmCIF 加从 0 开始的 query／template 残基映射。 |
+
+容器文件（`/path/to/your/alphafold3.sif`）、参数目录（`/path/to/your/model_parameters`）、数据库目录（`/path/to/your/databases`）和工作目录（`/path/to/your/workspace`）是部署资源，不能互相替代；详见[配置说明](#configuration)。请勿将真实序列或私人路径加入 Issue 或 Git 历史。
+
+## Configuration
+
+The program and the data have separate locations. Keep the installation and its Python environment accessible from compute nodes; place personal work and caches under a writable work directory. No real site configuration is included in releases.
+
+## Locations
+
+| Key | Meaning / 含义 | Example |
+|---|---|---|
+| `HOST_BASE` | Personal work directory / 个人工作目录 | `~/AF3` |
+| `HOST_SIF` | Container **file** / 容器文件 | `/path/to/your/alphafold3.sif` |
+| `HOST_MODELS` | Parameter directory / 模型参数目录 | `/path/to/your/model_parameters` |
+| `HOST_DB_SOURCE` | Database directory / 数据库目录 | `/path/to/your/public_databases` |
+| `HOST_OUTPUT` | Per-batch results / 批次结果 | Derived from `HOST_BASE/output` |
+| `HOST_MSA_DATA` | Reusable MSA pool / MSA 池 | Derived from `HOST_BASE/msa_data` |
+| `MSA_BACKUP_DIRS` | Up to two independent backup pools / 最多两个独立备份池 | `[]` by default; list of directory paths |
+| `HOST_INFER_DATA` | Full-length inference pool / 全长推理池 | Derived from `HOST_BASE/infer_data` |
+| `HOST_CACHE` | General cache / 一般缓存 | Derived from `HOST_BASE/cache` |
+| `HOST_JAX_CACHE` | Compilation cache / 编译缓存 | Derived from `HOST_BASE/af3_buckets_cache` |
+| `HOST_SSD_CACHE` | Optional node-local database cache / 可选节点 SSD | Empty disables this feature |
+
+Empty required paths are not treated as the current directory. Nonempty `HOST_*` paths and CLI `--output-dir` / `--msa-dir` overrides expand `~` and become absolute; resolve relative paths from the process working directory. Prefer absolute paths to avoid changes when launching from a different folder. Newlines and NUL are invalid. `/path/to/your/...` values are documentation placeholders and must be replaced before submission.
+
+On Linux, these host paths cannot contain `:` or `,` because those characters delimit Singularity bind specifications. This rule does not describe all file references inside input expressions. Spaces, single quotes, and dollar signs are quoted when constructing shell commands. Do not add shell quotes inside a JSON path value; store the actual path.
+
+空的必填路径不应变成当前目录；相对路径以启动目录为基准。推荐使用绝对路径。内部容器挂载点是应用接口，不是私人路径，不需要按文档占位规则修改。
+
+`MSA_BACKUP_DIRS` entries use the same path normalization as `HOST_MSA_DATA`. The complete set must have at most three distinct, non-nested directories. Backups must already exist and be readable/writable before an MSA submission; inference-only work does not require backup write access. Setup's resource check includes all configured backups. See [MSA pool behavior](#msa-pools) for startup consent, add-only synchronization, backup receipts and reuse decisions.
+
+## Precedence and persistence
+
+From lower to higher priority:
+
+1. Built-in defaults.
+2. `site_config.json` beside the application (optional; ignored by Git).
+3. User JSON selected by `AF3_CONFIG`, or `~/.config/af3_console/config.json` by default.
+4. `AF3_BASE` overrides the work directory for ordinary application processes.
+
+Derived directories follow the resolved base unless explicitly configured. An explicitly configured shared model/cache location remains fixed when the base changes. `AUX_PARTITION` follows the resolved CPU partition unless explicitly set.
+
+Queued jobs use a complete configuration snapshot and `AF3_SNAPSHOT=1`, so a later change to your interactive `AF3_BASE` does not redirect an existing job. Internal snapshot variables are not installation settings. Setup writes user JSON atomically; it never edits installed source code. If `AF3_BASE` is exported, it continues to override a saved work directory until unset.
+
+优先级：内置默认值 → 程序旁站点配置 → 用户配置 → 普通进程的 `AF3_BASE`。任务快照固定原配置，不随之后的环境变量改变。
 
 ```bash
-python -m pip install -r requirements-dev.txt
-python -B merge_gui.py
-python -B -m unittest discover -s tests -v
-python -B packaging/audit_release.py
-python -B packaging/build_workflow_diagram.py --check
+export AF3_CONFIG=/path/to/your/private/config.json
+export AF3_BASE=/path/to/your/work_directory
+python -B af3_gui
 ```
 
-修改可读 GUI 模块后重新生成 `af3_gui`，不要直接编辑其压缩内容。中英文帮助应同步更新；测试仅使用临时目录、人工输入与模拟调度，不在 CI 中提交真实作业。流程图的中英文 Mermaid 源文件位于 `docs/images/`；执行 `python -B packaging/build_workflow_diagram.py` 重新生成 SVG，图结构变化时还需调整生成脚本中的布局。
+There is no `.env` loader. `AF3_PAE_CACHE` optionally changes the local PAE numerical cache. GUI interpreter/script overrides, when used, must point to a matching installation. Do not put secrets in configuration or commit your environment export.
 
-原创贡献采用 MIT；PAE 和 NetworkX 衍生模块继续保留各自的 LGPL-2.1-only 和 BSD-3-Clause 许可及上游通知，详见[第三方声明](../THIRD_PARTY_NOTICES.md)。修改科学算法需要独立的预期结果和影响说明。发现误提交的敏感信息时，不要在公开 Issue 中重复发布。
+## Slurm and container settings
+
+- `MSA_PARTITION` and `INF_PARTITION`: required actual CPU/GPU partition names.
+- `AUX_PARTITION`: optional controller/watcher partition; otherwise follows CPU.
+- `INF_FALLBACK_PARTITION`: empty disables automatic fallback. Large jobs stay on the primary configured GPU partition; memory success is not guaranteed.
+- `CONTAINER_RUNTIME`: default `singularity`, or the executable path supplied by your administrator. The command is treated as one executable, not an arbitrary shell snippet.
+- `CONTAINER_MODULE`: optional module name, such as the actual site-specific Singularity module. Empty means use the current PATH. A job checks module availability, loads it if configured, then checks the runtime. A module-only installation is not rejected solely because the executable is absent from the login node's initial PATH.
+- `HOST_SSD_CACHE`: empty prevents node-local database copying; only enable it with a writable, appropriate cache layout agreed with your administrator.
+
+CPU counts, concurrency, buckets, and token thresholds retain the existing configurable `MSA_*` / `INF_*` settings. They are policy defaults, not hardware guarantees. The initial release targets the existing Singularity command interface and standard Slurm directives; sites requiring additional account/QoS wrappers or other runtimes need separate validation.
+
+Setup and CLI submission share deployment checks. They check the resources needed by the selected stage, permissions on existing files or writable parents of new output directories, and required Slurm tools. Offline help/PAE analysis and planning are not blocked by an incomplete cluster deployment. The actual compute-node mount and GPU environment still need a real test job.
+
+## Data and network behavior
+
+UniProt expressions can query UniProt to resolve sequences and display names. A preview may therefore make network requests, even though it does not submit Slurm jobs. Reports, task snapshots, JSON inputs, and caches can contain research information; keep them outside the repository and sanitize any diagnostic material before sharing.
+
+## MSA pools
+
+## 设置 1–3 个目录
+
+在 **设置 → MSA 缓存目录** 的第一个路径框左侧点击 **＋**，可在下方增加第二、第三个路径框。第一项是主池，其他项是备份池；移除路径框只修改配置，不删除文件。保存后生效。目录必须相互独立，不能相同，也不能互相包含。
+
+```json
+{
+  "HOST_MSA_DATA": "/path/to/your/primary_msa_pool",
+  "MSA_BACKUP_DIRS": [
+    "/path/to/your/first_backup_msa_pool",
+    "/path/to/your/second_backup_msa_pool"
+  ]
+}
+```
+
+`MSA_BACKUP_DIRS` 默认是 `[]`，最多两项。路径展开 `~`，相对路径以启动目录为基准，建议填绝对路径。请事先创建备份目录，并确保登录节点和计算节点都能读写；设置检查和启动扫描不会创建它们。使用同事的目录前，应由双方约定共享范围和访问权限。无需安装或配置 rsync。
+
+## 新产物备份与已有文件同步
+
+**新计算的产物：** AF3 先在主池内完成写入；校验通过后，将完整产物复制到每个已配置的备份池。保留 AF3 的目录、JSON 文件名和附带文件，继续兼容原生目录、时间戳目录及旧版平铺文件。备份按任务提交时的配置快照执行，之后修改设置不会改变排队任务的目的地。
+
+**已有产物：** 每次打开 GUI，后台检查一次已保存的目录。发现某个池有其他池缺少的完整产物时，弹窗显示待复制项、大小及问题，由用户决定是否互相同步；默认不执行。可在设置页手动再次检查。扫描会读取内容并计算校验值，大文件或网络目录较多时可能需要一些时间。
+
+同步采用“只新增”规则：
+
+- 相同内容跳过；不同内容但同名的目录/文件列为冲突，保留双方版本，不自动选最新、不覆盖、不合并目录。
+- 复制整个原生或带时间戳的目录，包括其内部引用的相对路径文件。只有内容自包含的旧平铺 JSON 才能直接复制。
+- 缺字段、格式无效、生成尚未完成、来源仍在变化、指向产物目录外的文件引用，以及符号链接或 Windows junction，不会作为完整可移植产物复制；结果中给出原因。
+- 复制前后复查源文件；目标在扫描后被别人创建也会跳过并报告冲突。无法可靠执行“目标存在则失败”的文件系统会报错。
+- 不执行删除镜像同步。清理功能也会拒绝删除已配置或任务快照记录的 MSA 池、池内内容以及包含池的父目录。同步失败只清理本次操作自己的临时暂存内容，不删除已有产物。
+
+新产物备份失败时，成功的主池数据仍保留，推理可以继续；作业日志显示警告，主池的 `.msa_backup_receipts/<任务名>.json` 记录哪些备份未完成。修复权限、容量或冲突后，在 GUI 中重新检查同步。**一次主池计算成功不等于所有备份成功**，应查看这份记录或同步结果。
+
+多个目录增加了副本，但同一存储设备上的副本不能防止设备整体损坏。同步没有版本删除/恢复功能；需要历史版本或灾难恢复时，应结合存储系统已有的快照和备份服务。
+
+## 复用之前的检查
+
+程序区分两类情况：
+
+| 检查结果 | 行为 |
+|---|---|
+| 必需字段缺失、类型错误、比对无法读取、模板索引不合法等 | 不作为完整缓存复用，给出具体原因。 |
+| 数据格式完整，但蛋白链的 `unpairedMsa`、`pairedMsa` 或 `templates` 为空 | 列出具体文件、链和空字段，让用户选择 **复用 / 重新计算 MSA / 取消**；默认取消。RNA 只检查其适用的 `unpairedMsa`。 |
+
+空字符串和 `templates: []` 是 AF3 的合法输入/结果，可能表示无搜索命中或显式关闭相应功能；本项目仍提示，因为用户可能预期有 MSA 和模板。重新计算保留原目录，使用新的计算身份和目录，不覆盖共享缓存。**重新运行并不保证一定得到非空结果**，需核对搜索设置、输入和数据库。
+
+已有损坏产物也不会被 AF3 原位覆盖：新计划或重试会为修复分配新的目录，保留原自定义输入配方；正在运行的控制任务若发现旧目录已有不完整数据，会停止并提示重新规划。直接用于仅推理的无效 JSON 会被拒绝，需先修正输入或选择能够重新运行 MSA 的流程。
+
+MSA 命令不启用 AF3 的强制覆盖目录选项。若其他脚本在检查后抢先写入同名目录，AF3 可能自行生成时间戳目录；所有目录均保留，本次受管理的任务会因预期输出未就绪而报错，需检查日志并重新规划。同事的脚本不遵循本程序锁时，仍需双方避免同时操作同一产物。
+
+确认复用针对当时检查到的文件版本；不能把一次确认作为将来所有空缓存的永久许可。新计算或后来变化的数据仍需检查。远程控制任务无法弹窗时，会停止相关推理并记录需确认状态，之后在 GUI 中重试处理。预览不授权正式提交。
+
+CLI 遇到需要确认的缓存会给出文件与空字段信息并退出；明确使用 `--empty-msa-policy reuse` 或 `--empty-msa-policy recompute` 后再提交。合法但为空的文件可以备份和同步；同步确认与推理复用确认是两个独立决定。
+
+完整性检查支持内嵌内容和 AF3 的外部文件引用，包含 gzip、xz 和 zstd 压缩的比对文本。检查字段、比对查询序列、模板内容和索引的一致性，不代替 AF3 对结构文件的完整解析，也不能证明 MSA 或模板具有生物学质量。公开测试只使用人工数据。
+
+
+
+完整源码、测试和构建工具见 [source 分支](https://github.com/luckingclark/AF3-Console/tree/source)。部署目录中的第三方模块可以直接修改或替换；请保留许可证。

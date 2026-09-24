@@ -1,4 +1,4 @@
-name: Offline checks
+name: Deployment checks
 on: [push, pull_request]
 permissions:
   contents: read
@@ -12,19 +12,21 @@ jobs:
       MPLBACKEND: Agg
     steps:
       - uses: actions/checkout@v4
+      - name: Obtain the exact matching source and tests
+        uses: actions/checkout@v4
+        with:
+          ref: 03c29106fd23b20928c9591b35b22b2508c9adfd
+          path: .source-check
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install Qt system library and Python dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libegl1 libopengl0
-          python -m pip install -r requirements-dev.txt
-      - name: Check checked-in GUI payload and workflow graphics
-        run: |
-          python -B packaging/audit_release.py
-          python -B packaging/build_workflow_diagram.py --check
-      - name: Offline tests
+          python -m pip install -r .source-check/requirements-dev.txt
+      - name: Verify the deployable files and start the isolated GUI
+        run: python -B .github/check_runtime.py --source .source-check
+      - name: Run the full matching source test suite
+        working-directory: .source-check
         run: python -B -m unittest discover -s tests -v
-      - name: Build clean source and runtime archives
-        run: python -B packaging/build_release.py

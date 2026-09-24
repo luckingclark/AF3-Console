@@ -39,9 +39,12 @@ provided in this distribution. Users can edit or replace
 `af3_pae_domains.py` with a compatible implementation; the application imports
 that file at runtime. When redistributing it, retain its notices and comply
 with LGPL 2.1, including its source and modification-notice requirements.
-If you redistribute the portable GUI, also distribute the application source,
-the independent algorithm modules, notices, and the GUI build script.
-See [algorithm provenance](docs/algorithm-provenance.md) for details.
+The complete matching application source and GUI build script are available
+from the [source snapshot](https://github.com/luckingclark/AF3-Console/tree/03c29106fd23b20928c9591b35b22b2508c9adfd/).
+The default main branch contains the deployable files; source contains the
+readable GUI modules, tests and build tools. Keep the independent algorithm
+modules, notices and access to matching application source when redistributing.
+See [algorithm provenance](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/algorithm-provenance.md) for details.
 
 ## External software installed separately
 

@@ -46,3 +46,5 @@ spec.json
 plan.json
 results_report.html
 environment-explicit.txt
+
+.source-check/
