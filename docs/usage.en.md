@@ -1,6 +1,6 @@
 # AF3 Console usage
 
-[中文指南](usage.zh-CN.md) · [Home](../README.md) · [Input formats](#input-formats)
+[Chinese guide](usage.zh-CN.md) · [Home](../README.md) · [Input formats](#input-formats)
 
 For **0.1.0, deployment edition 2026-09-24**. Install the environment from the repository root, then enter `AF3_Console/` to configure and run. Download the complete current main branch; do not mix it with the older September 12 five-file package.
 
@@ -187,25 +187,25 @@ The program and the data have separate locations. Keep the installation and its 
 
 ## Locations
 
-| Key | Meaning / 含义 | Example |
+| Key | Meaning | Example |
 |---|---|---|
-| `HOST_BASE` | Personal work directory / 个人工作目录 | `~/AF3` |
-| `HOST_SIF` | Container **file** / 容器文件 | `/path/to/your/alphafold3.sif` |
-| `HOST_MODELS` | Parameter directory / 模型参数目录 | `/path/to/your/model_parameters` |
-| `HOST_DB_SOURCE` | Database directory / 数据库目录 | `/path/to/your/public_databases` |
-| `HOST_OUTPUT` | Per-batch results / 批次结果 | Derived from `HOST_BASE/output` |
-| `HOST_MSA_DATA` | Reusable MSA pool / MSA 池 | Derived from `HOST_BASE/msa_data` |
-| `MSA_BACKUP_DIRS` | Up to two independent backup pools / 最多两个独立备份池 | `[]` by default; list of directory paths |
-| `HOST_INFER_DATA` | Full-length inference pool / 全长推理池 | Derived from `HOST_BASE/infer_data` |
-| `HOST_CACHE` | General cache / 一般缓存 | Derived from `HOST_BASE/cache` |
-| `HOST_JAX_CACHE` | Compilation cache / 编译缓存 | Derived from `HOST_BASE/af3_buckets_cache` |
-| `HOST_SSD_CACHE` | Optional node-local database cache / 可选节点 SSD | Empty disables this feature |
+| `HOST_BASE` | Personal work directory | `~/AF3` |
+| `HOST_SIF` | Container **file** | `/path/to/your/alphafold3.sif` |
+| `HOST_MODELS` | Parameter directory | `/path/to/your/model_parameters` |
+| `HOST_DB_SOURCE` | Database directory | `/path/to/your/public_databases` |
+| `HOST_OUTPUT` | Per-batch results | Derived from `HOST_BASE/output` |
+| `HOST_MSA_DATA` | Reusable MSA pool | Derived from `HOST_BASE/msa_data` |
+| `MSA_BACKUP_DIRS` | Up to two independent backup pools | `[]` by default; list of directory paths |
+| `HOST_INFER_DATA` | Full-length inference pool | Derived from `HOST_BASE/infer_data` |
+| `HOST_CACHE` | General cache | Derived from `HOST_BASE/cache` |
+| `HOST_JAX_CACHE` | Compilation cache | Derived from `HOST_BASE/af3_buckets_cache` |
+| `HOST_SSD_CACHE` | Optional node-local database cache | Empty disables this feature |
 
 Empty required paths are not treated as the current directory. Nonempty `HOST_*` paths and CLI `--output-dir` / `--msa-dir` overrides expand `~` and become absolute; resolve relative paths from the process working directory. Prefer absolute paths to avoid changes when launching from a different folder. Newlines and NUL are invalid. `/path/to/your/...` values are documentation placeholders and must be replaced before submission.
 
 On Linux, these host paths cannot contain `:` or `,` because those characters delimit Singularity bind specifications. This rule does not describe all file references inside input expressions. Spaces, single quotes, and dollar signs are quoted when constructing shell commands. Do not add shell quotes inside a JSON path value; store the actual path.
 
-空的必填路径不应变成当前目录；相对路径以启动目录为基准。推荐使用绝对路径。内部容器挂载点是应用接口，不是私人路径，不需要按文档占位规则修改。
+Internal container mount points are part of the application interface; do not replace them as though they were private host paths.
 
 `MSA_BACKUP_DIRS` entries use the same path normalization as `HOST_MSA_DATA`. The complete set must have at most three distinct, non-nested directories. Backups must already exist and be readable/writable before an MSA submission; inference-only work does not require backup write access. Setup's resource check includes all configured backups. See [MSA pool behavior](#msa-pools) for startup consent, add-only synchronization, backup receipts and reuse decisions.
 
@@ -221,8 +221,6 @@ From lower to higher priority:
 Derived directories follow the resolved base unless explicitly configured. An explicitly configured shared model/cache location remains fixed when the base changes. `AUX_PARTITION` follows the resolved CPU partition unless explicitly set.
 
 Queued jobs use a complete configuration snapshot and `AF3_SNAPSHOT=1`, so a later change to your interactive `AF3_BASE` does not redirect an existing job. Internal snapshot variables are not installation settings. Setup writes user JSON atomically; it never edits installed source code. If `AF3_BASE` is exported, it continues to override a saved work directory until unset.
-
-优先级：内置默认值 → 程序旁站点配置 → 用户配置 → 普通进程的 `AF3_BASE`。任务快照固定原配置，不随之后的环境变量改变。
 
 ```bash
 export AF3_CONFIG=/path/to/your/private/config.json

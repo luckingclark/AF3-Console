@@ -4,21 +4,25 @@
 
 AF3 Console 是面向**在 Slurm 集群上使用 AlphaFold 3 的科研人员**的双语桌面与命令行工作台，整合输入准备、作业提交与监控，并汇总预测结构和互作筛选分数，便于查看结果。
 
-**当前版本：0.1.0（预发布）。** `main` 是供用户配置后运行的部署版；[source 分支](https://github.com/luckingclark/AF3-Console/tree/source)保存可读 GUI 源码、测试与构建工具。项目作者：**PKU-Gaolab, Ming-Ao Lu**。
+**当前版本：0.1.0（预发布）。** `main` 是供用户配置后运行的部署版；[source 分支](https://github.com/luckingclark/AF3-Console/tree/source)保存可读 GUI 源码、测试与构建工具。
 
-## 为什么做片段扫描
+## 三种工作模式
 
-AF3 Console 在基于 AlphaFold 3 的批量互作筛选（Pulldown）之外，引入了面向长蛋白的片段扫描（Scan）模式。超长序列的全长预测可能难以突出局部互作信号，仅依据整体 ipTM 低分排除候选，存在漏掉潜在互作的假阴性风险。Scan 将长蛋白分段后与候选伙伴逐一预测，并将结果映射回原序列坐标，旨在减少全长筛选中的漏检，同时定位值得进一步验证的互作区域，为截短体设计和实验验证提供依据。
+### Run
 
-在固定长度滑动窗口（Window Scan）的基础上，项目进一步引入 PAE 结构域窗口（PAE Domain Window），旨在减少人为截断造成的假阳性。固定窗口可能从结构域内部切开，破坏原有折叠单元，例如移除自身 β 链后，其他蛋白片段可能在预测中“补位”，形成依赖截断边界的高分伪互作。为此，项目复用 ChimeraX **Color PAE Domains** 的分域逻辑，根据单体预测的 PAE 将相对位置较确定的残基聚为结构单元候选，再据此构造扫描片段，尽量保留结构完整性、减少任意断域，而无需依赖现成的结构域注释。该策略为切片提供了结构依据，其降低假阳性的实际效果仍需通过系统比较和实验验证。
+根据表达式或 AF3 输入 JSON 预测指定蛋白或复合物，也可选择仅生成 MSA 或仅进行推理。
 
-## 选择模式
+### Pulldown
 
-| 模式 | 需要提供什么 | 实现什么 |
-|---|---|---|
-| **Run** | 蛋白或复合物表达式，或 AF3 输入 JSON | 预测指定体系；也支持仅 MSA、仅推理阶段。 |
-| **Pulldown** | 两组蛋白或复合物表达式 | 筛选两组之间的组合，汇总预测分数。 |
-| **Scan** | 两组输入和片段设置 | 使用固定滑动窗口（**Window Scan**）或单体 PAE 引导的窗口（**PAE Domain Window**）筛选片段，将分数映射回原序列坐标。 |
+批量筛选两组蛋白或复合物之间的组合，并汇总预测分数。
+
+### Scan
+
+使用固定滑动窗口（**Window Scan**）或单体 PAE 引导的窗口（**PAE Domain Window**）与候选伙伴逐一预测，并将分数映射回原序列坐标。
+
+长蛋白的全长预测可能掩盖局部互作信号，仅凭整体 ipTM 低分排除候选，存在漏检风险。片段扫描旨在定位值得验证的区域，为截短体设计和实验验证提供依据。
+
+固定窗口可能切断结构域，产生依赖截断边界的高分伪互作。PAE 结构域窗口借鉴 ChimeraX **Color PAE Domains**，依据单体 PAE 聚类残基并构造片段，尽量保留候选结构单元，无需现成的结构域注释；其降低假阳性的实际效果仍需系统比较和实验验证。
 
 ![Run、Pulldown 与 Scan 综合流程图，Scan 包含固定窗口和 PAE 结构域窗口](images/workflow-zh-CN.svg)
 
@@ -111,9 +115,9 @@ python -B af3_gui
 
 ## 作者、许可与引用
 
-项目作者：**PKU-Gaolab, Ming-Ao Lu**。本项目代码利用 **Kimi-K3 和 GPT-6**，通过 AI 辅助的 **vibe coding** 方式完成。反馈问题前请先脱敏日志和截图；可读源码与开发检查位于 [source 分支](https://github.com/luckingclark/AF3-Console/tree/source)。作者署名不代表持续维护承诺。
+项目作者：**PKU-Gaolab, Ming-Ao Lu**。本项目代码利用 **Kimi-K3 和 GPT-6**，通过 AI 辅助的 **vibe coding** 方式完成。反馈问题前请先脱敏日志和截图；可读源码与开发检查位于 [source 分支](https://github.com/luckingclark/AF3-Console/tree/source)。
 
-- 原创代码和文档采用 **MIT**，Copyright © 2026 PKU-Gaolab, Ming-Ao Lu，见 [LICENSE](../LICENSE)。
+- 原创代码和文档采用 **MIT**，见 [LICENSE](../LICENSE)。
 - `af3_pae_domains.py` 采用 **LGPL-2.1-only**，改编自 UCSF ChimeraX **Color PAE Domains** 实现，并保留对 Tristan Croll／ISOLDE 的来源归功。
 - `af3_networkx_community.py` 采用 **BSD-3-Clause**，改编自 NetworkX 的聚类与映射队列代码。
 - 随附字体保留自身条款。完整第三方说明和许可证见 [THIRD_PARTY_NOTICES.md](../AF3_Console/THIRD_PARTY_NOTICES.md) 及 [LICENSES/](../AF3_Console/LICENSES/)，也可从帮助 → 关于离线访问。

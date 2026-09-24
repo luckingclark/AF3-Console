@@ -1,24 +1,28 @@
 # AF3 Console
 
-[中文说明](docs/README.zh-CN.md) · [Full usage guide](docs/usage.en.md) · [Related tools](docs/comparison.md)
+[Chinese](docs/README.zh-CN.md) · [Full usage guide](docs/usage.en.md) · [Related tools](docs/comparison.md)
 
 AF3 Console is a bilingual desktop and command-line workbench for researchers using **AlphaFold 3 on Slurm clusters**. It prepares inputs, submits and monitors jobs, and organizes predicted structures and interaction-screening scores for review.
 
-**Version 0.1.0 — pre-release.** `main` is the ready-to-configure deployment edition; [source](https://github.com/luckingclark/AF3-Console/tree/source) contains readable GUI modules, tests and build tools. Project author: **PKU-Gaolab, Ming-Ao Lu**.
+**Version 0.1.0 — pre-release.** `main` is the ready-to-configure deployment edition; [source](https://github.com/luckingclark/AF3-Console/tree/source) contains readable GUI modules, tests and build tools.
 
-## Why fragment scanning
+## Three workflow modes
 
-Beyond AlphaFold 3–based batch interaction screening (Pulldown), AF3 Console introduces fragment scanning (Scan) for long proteins. Full-length predictions of very long sequences may fail to highlight local interaction signals; excluding candidates solely on a low overall ipTM score risks false negatives. Scan predicts fragments of a long protein against candidate partners and maps the results back to the original sequence coordinates. It aims to reduce missed interactions in full-length screening and locate regions for further investigation, informing truncation design and experimental validation.
+### Run
 
-Building on fixed-length sliding windows (Window Scan), the project introduces PAE Domain Windows to help reduce false positives caused by artificial truncation. Fixed windows can cut through a domain and disrupt its fold: for example, after a native β strand is removed, a fragment of another protein might occupy its place in a prediction, producing a high-scoring apparent interaction dependent on the truncation boundary. AF3 Console therefore reuses the domain-segmentation logic of ChimeraX **Color PAE Domains**. It groups residues with relatively well-determined positions with respect to one another, using PAE from a monomer prediction, into candidate structural units and constructs scanning fragments from them. This aims to preserve structural integrity and reduce arbitrary domain splitting without requiring existing domain annotations. The strategy provides a structural basis for fragmentation; whether it actually reduces false positives still requires systematic comparison and experimental validation.
+Predict a specified protein or complex from an expression or AF3 input JSON, with options to run only MSA generation or inference.
 
-## Choose a workflow
+### Pulldown
 
-| Mode | What you provide | What it does |
-|---|---|---|
-| **Run** | A protein or complex expression, or an AF3 input JSON | Predicts the specified system; also supports MSA-only and inference-only stages. |
-| **Pulldown** | Two groups of protein or complex expressions | Screens combinations between the groups and summarizes their scores. |
-| **Scan** | Two input groups and fragment settings | Screens fragments using fixed sliding windows (**Window Scan**) or monomer PAE–guided windows (**PAE Domain Window**), then maps scores to sequence coordinates. |
+Screen combinations between two groups of proteins or complexes and summarize their prediction scores.
+
+### Scan
+
+Screen fragments against candidate partners using fixed sliding windows (**Window Scan**) or monomer PAE–guided windows (**PAE Domain Window**), and map the scores back to the original sequence coordinates.
+
+Full-length predictions of long proteins may obscure local interaction signals, so excluding candidates solely on a low overall ipTM score can miss potential interactions. Fragment scanning aims to identify regions worth testing and guide truncation design and experimental validation.
+
+Fixed windows can cut through a domain and produce high-scoring apparent interactions that depend on the truncation boundary. PAE Domain Window adapts ChimeraX **Color PAE Domains** to group residues using monomer PAE and construct fragments that better preserve candidate structural units, without requiring existing domain annotations. Whether this reduces false positives still requires systematic comparison and experimental validation.
 
 ![One overview of Run, Pulldown and Scan, including the two Scan modes](docs/images/workflow-en.svg)
 
@@ -111,9 +115,9 @@ Real Slurm/AF3 execution, a fresh Linux Conda installation, interactive X11 use,
 
 ## Author, licensing and citation
 
-Project author: **PKU-Gaolab, Ming-Ao Lu**. This project's code was developed through AI-assisted **vibe coding using Kimi-K3 and GPT-6**. You can report issues after sanitizing logs and screenshots; readable source and development checks are on the [source branch](https://github.com/luckingclark/AF3-Console/tree/source). Author attribution does not imply a commitment to ongoing maintenance.
+Project author: **PKU-Gaolab, Ming-Ao Lu**. This project's code was developed through AI-assisted **vibe coding using Kimi-K3 and GPT-6**. You can report issues after sanitizing logs and screenshots; readable source and development checks are on the [source branch](https://github.com/luckingclark/AF3-Console/tree/source).
 
-- Original code and documentation: **MIT**, Copyright © 2026 PKU-Gaolab, Ming-Ao Lu; see [LICENSE](LICENSE).
+- Original code and documentation: **MIT**; see [LICENSE](LICENSE).
 - `af3_pae_domains.py`: **LGPL-2.1-only**, adapted from the UCSF ChimeraX **Color PAE Domains** implementation, retaining credit to Tristan Croll / ISOLDE.
 - `af3_networkx_community.py`: **BSD-3-Clause**, adapted from NetworkX clustering and mapped-queue code.
 - The bundled font retains its own terms. Full third-party notices and license texts are in [THIRD_PARTY_NOTICES.md](AF3_Console/THIRD_PARTY_NOTICES.md) and [LICENSES/](AF3_Console/LICENSES/), also accessible offline from Help → About.

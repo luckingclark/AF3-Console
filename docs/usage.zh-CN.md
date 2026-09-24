@@ -186,48 +186,52 @@ python -B af3.py run --infer-only --json /path/to/your/msa_data/P12345_20260602_
 
 容器文件（`/path/to/your/alphafold3.sif`）、参数目录（`/path/to/your/model_parameters`）、数据库目录（`/path/to/your/databases`）和工作目录（`/path/to/your/workspace`）是部署资源，不能互相替代；详见[配置说明](#configuration)。请勿将真实序列或私人路径加入 Issue 或 Git 历史。
 
-## Configuration
+<a id="configuration"></a>
 
-The program and the data have separate locations. Keep the installation and its Python environment accessible from compute nodes; place personal work and caches under a writable work directory. No real site configuration is included in releases.
+## 配置说明
 
-## Locations
+程序与数据分别存放。安装目录及其 Python 环境必须能被计算节点访问；个人任务与缓存应放在可写的工作目录中。发布包不包含真实的站点配置。
 
-| Key | Meaning / 含义 | Example |
+<a id="locations"></a>
+
+### 路径与目录
+
+| 配置项 | 含义 | 示例或默认行为 |
 |---|---|---|
-| `HOST_BASE` | Personal work directory / 个人工作目录 | `~/AF3` |
-| `HOST_SIF` | Container **file** / 容器文件 | `/path/to/your/alphafold3.sif` |
-| `HOST_MODELS` | Parameter directory / 模型参数目录 | `/path/to/your/model_parameters` |
-| `HOST_DB_SOURCE` | Database directory / 数据库目录 | `/path/to/your/public_databases` |
-| `HOST_OUTPUT` | Per-batch results / 批次结果 | Derived from `HOST_BASE/output` |
-| `HOST_MSA_DATA` | Reusable MSA pool / MSA 池 | Derived from `HOST_BASE/msa_data` |
-| `MSA_BACKUP_DIRS` | Up to two independent backup pools / 最多两个独立备份池 | `[]` by default; list of directory paths |
-| `HOST_INFER_DATA` | Full-length inference pool / 全长推理池 | Derived from `HOST_BASE/infer_data` |
-| `HOST_CACHE` | General cache / 一般缓存 | Derived from `HOST_BASE/cache` |
-| `HOST_JAX_CACHE` | Compilation cache / 编译缓存 | Derived from `HOST_BASE/af3_buckets_cache` |
-| `HOST_SSD_CACHE` | Optional node-local database cache / 可选节点 SSD | Empty disables this feature |
+| `HOST_BASE` | 个人工作目录 | `~/AF3` |
+| `HOST_SIF` | 容器**文件** | `/path/to/your/alphafold3.sif` |
+| `HOST_MODELS` | 模型参数目录 | `/path/to/your/model_parameters` |
+| `HOST_DB_SOURCE` | 数据库目录 | `/path/to/your/public_databases` |
+| `HOST_OUTPUT` | 批次结果目录 | 根据 `HOST_BASE` 派生为其下的 `output/` |
+| `HOST_MSA_DATA` | 可复用的 MSA 主池 | 根据 `HOST_BASE` 派生为其下的 `msa_data/` |
+| `MSA_BACKUP_DIRS` | 最多两个独立的 MSA 备份池 | 默认 `[]`；填写目录路径列表 |
+| `HOST_INFER_DATA` | 全长推理池 | 根据 `HOST_BASE` 派生为其下的 `infer_data/` |
+| `HOST_CACHE` | 一般缓存目录 | 根据 `HOST_BASE` 派生为其下的 `cache/` |
+| `HOST_JAX_CACHE` | 编译缓存目录 | 根据 `HOST_BASE` 派生为其下的 `af3_buckets_cache/` |
+| `HOST_SSD_CACHE` | 可选的节点本地数据库缓存 | 留空时关闭此功能 |
 
-Empty required paths are not treated as the current directory. Nonempty `HOST_*` paths and CLI `--output-dir` / `--msa-dir` overrides expand `~` and become absolute; resolve relative paths from the process working directory. Prefer absolute paths to avoid changes when launching from a different folder. Newlines and NUL are invalid. `/path/to/your/...` values are documentation placeholders and must be replaced before submission.
+必填路径为空时，不会将其视为当前目录。非空的 `HOST_*` 路径以及 CLI 的 `--output-dir`／`--msa-dir` 会展开 `~` 并转换为绝对路径；相对路径以进程启动目录为基准。建议使用绝对路径，避免从不同位置启动时指向不同目录。路径不能含换行符或 NUL 字符。`/path/to/your/...` 是文档占位符，提交前必须替换。
 
-On Linux, these host paths cannot contain `:` or `,` because those characters delimit Singularity bind specifications. This rule does not describe all file references inside input expressions. Spaces, single quotes, and dollar signs are quoted when constructing shell commands. Do not add shell quotes inside a JSON path value; store the actual path.
+在 Linux 上，上述主机路径不能包含 `:` 或 `,`，因为它们是 Singularity 挂载参数的分隔符；这一规则并不适用于输入表达式中的所有文件引用。构造 shell 命令时，程序会对空格、单引号和美元符号进行引用处理。JSON 路径值中应直接保存实际路径，不要额外加入 shell 引号。
 
-空的必填路径不应变成当前目录；相对路径以启动目录为基准。推荐使用绝对路径。内部容器挂载点是应用接口，不是私人路径，不需要按文档占位规则修改。
+容器内部挂载点是程序接口，不是私人主机路径，不应按文档占位符的方式替换。
 
-`MSA_BACKUP_DIRS` entries use the same path normalization as `HOST_MSA_DATA`. The complete set must have at most three distinct, non-nested directories. Backups must already exist and be readable/writable before an MSA submission; inference-only work does not require backup write access. Setup's resource check includes all configured backups. See [MSA pool behavior](#msa-pools) for startup consent, add-only synchronization, backup receipts and reuse decisions.
+`MSA_BACKUP_DIRS` 与 `HOST_MSA_DATA` 使用相同的路径规范化规则。主池与备份池合计最多三个目录，必须互不相同、互不包含。提交 MSA 任务前，备份目录必须已存在且可读写；仅推理任务不要求备份目录写权限。设置页的资源检查涵盖所有已配置的备份目录。启动确认、只新增同步、备份回执与复用选择见 [MSA 池说明](#msa-pools)。
 
-## Precedence and persistence
+<a id="precedence-and-persistence"></a>
 
-From lower to higher priority:
+### 配置优先级与保存
 
-1. Built-in defaults.
-2. `site_config.json` beside the application (optional; ignored by Git).
-3. User JSON selected by `AF3_CONFIG`, or `~/.config/af3_console/config.json` by default.
-4. `AF3_BASE` overrides the work directory for ordinary application processes.
+配置优先级从低到高为：
 
-Derived directories follow the resolved base unless explicitly configured. An explicitly configured shared model/cache location remains fixed when the base changes. `AUX_PARTITION` follows the resolved CPU partition unless explicitly set.
+1. 程序内置默认值。
+2. 程序旁的 `site_config.json`（可选，已由 Git 忽略）。
+3. `AF3_CONFIG` 指定的用户 JSON，默认使用 `~/.config/af3_console/config.json`。
+4. 普通程序进程中的 `AF3_BASE` 环境变量覆盖工作目录。
 
-Queued jobs use a complete configuration snapshot and `AF3_SNAPSHOT=1`, so a later change to your interactive `AF3_BASE` does not redirect an existing job. Internal snapshot variables are not installation settings. Setup writes user JSON atomically; it never edits installed source code. If `AF3_BASE` is exported, it continues to override a saved work directory until unset.
+未显式配置的派生目录跟随最终工作目录。已显式指定的共享模型或缓存路径不会随工作目录变化。`AUX_PARTITION` 未单独设置时，跟随最终 CPU 分区。
 
-优先级：内置默认值 → 程序旁站点配置 → 用户配置 → 普通进程的 `AF3_BASE`。任务快照固定原配置，不随之后的环境变量改变。
+排队任务使用完整配置快照和 `AF3_SNAPSHOT=1`，之后修改交互环境中的 `AF3_BASE` 不会改变已有任务的路径。内部快照变量不属于安装配置。设置页以原子方式写入用户 JSON，不修改安装目录中的源码。如果已导出 `AF3_BASE`，它会持续覆盖保存的工作目录，直到该环境变量被取消。
 
 ```bash
 export AF3_CONFIG=/path/to/your/private/config.json
@@ -235,28 +239,34 @@ export AF3_BASE=/path/to/your/work_directory
 python -B af3_gui
 ```
 
-There is no `.env` loader. `AF3_PAE_CACHE` optionally changes the local PAE numerical cache. GUI interpreter/script overrides, when used, must point to a matching installation. Do not put secrets in configuration or commit your environment export.
+程序不读取 `.env` 文件。可用 `AF3_PAE_CACHE` 调整本地 PAE 数值缓存位置。若覆盖 GUI 所用的解释器或脚本路径，两者必须指向匹配的安装版本。不要把凭据写进配置，也不要将包含个人环境设置的文件提交到仓库。
 
-## Slurm and container settings
+<a id="slurm-and-container-settings"></a>
 
-- `MSA_PARTITION` and `INF_PARTITION`: required actual CPU/GPU partition names.
-- `AUX_PARTITION`: optional controller/watcher partition; otherwise follows CPU.
-- `INF_FALLBACK_PARTITION`: empty disables automatic fallback. Large jobs stay on the primary configured GPU partition; memory success is not guaranteed.
-- `CONTAINER_RUNTIME`: default `singularity`, or the executable path supplied by your administrator. The command is treated as one executable, not an arbitrary shell snippet.
-- `CONTAINER_MODULE`: optional module name, such as the actual site-specific Singularity module. Empty means use the current PATH. A job checks module availability, loads it if configured, then checks the runtime. A module-only installation is not rejected solely because the executable is absent from the login node's initial PATH.
-- `HOST_SSD_CACHE`: empty prevents node-local database copying; only enable it with a writable, appropriate cache layout agreed with your administrator.
+### Slurm 与容器设置
 
-CPU counts, concurrency, buckets, and token thresholds retain the existing configurable `MSA_*` / `INF_*` settings. They are policy defaults, not hardware guarantees. The initial release targets the existing Singularity command interface and standard Slurm directives; sites requiring additional account/QoS wrappers or other runtimes need separate validation.
+- `MSA_PARTITION` 和 `INF_PARTITION`：填写实际可用的 CPU／GPU 分区名，属于必填项。
+- `AUX_PARTITION`：控制及监控作业的可选分区，未设置时跟随 CPU 分区。
+- `INF_FALLBACK_PARTITION`：留空时关闭自动转投，大任务仍使用主 GPU 分区；这不保证显存足够。
+- `CONTAINER_RUNTIME`：默认为 `singularity`，也可填写管理员提供的可执行文件路径；该值作为一个可执行程序处理，不能填写任意 shell 代码片段。
+- `CONTAINER_MODULE`：可选的环境模块名，例如站点实际提供的 Singularity 模块。留空时使用当前 `PATH`。作业先检查模块是否可用，按配置加载后再检查运行时；仅通过模块提供的安装不会因登录节点初始 `PATH` 中没有命令而直接被拒绝。
+- `HOST_SSD_CACHE`：留空时不向节点本地复制数据库；只有在管理员确认缓存布局合适且可写时才应启用。
 
-Setup and CLI submission share deployment checks. They check the resources needed by the selected stage, permissions on existing files or writable parents of new output directories, and required Slurm tools. Offline help/PAE analysis and planning are not blocked by an incomplete cluster deployment. The actual compute-node mount and GPU environment still need a real test job.
+CPU 数、并发数、编译桶和 token 阈值沿用可配置的 `MSA_*`／`INF_*` 设置。这些是调度策略默认值，不是硬件能力保证。首发面向当前的 Singularity 命令接口和标准 Slurm 指令；需要额外 account／QoS 封装或其他运行时的站点，应单独验证。
 
-## Data and network behavior
+设置页和 CLI 提交共用部署检查，按所选阶段核对资源、已有文件的权限、新输出目录父目录的可写性，以及必需的 Slurm 工具。集群配置不完整时，仍可使用离线帮助、PAE 分析和任务规划。计算节点上的实际挂载与 GPU 环境仍需用真实小任务验证。
 
-UniProt expressions can query UniProt to resolve sequences and display names. A preview may therefore make network requests, even though it does not submit Slurm jobs. Reports, task snapshots, JSON inputs, and caches can contain research information; keep them outside the repository and sanitize any diagnostic material before sharing.
+<a id="data-and-network-behavior"></a>
 
-## MSA pools
+### 数据与网络行为
 
-## 设置 1–3 个目录
+UniProt 表达式可能查询 UniProt，以获取序列和显示名称。因此，即使预览不提交 Slurm 作业，也可能发送网络请求。报告、任务快照、JSON 输入和缓存可能包含课题信息；请保存在仓库之外，分享诊断材料前先脱敏。
+
+<a id="msa-pools"></a>
+
+## MSA 池
+
+### 设置 1–3 个目录
 
 在 **设置 → MSA 缓存目录** 的第一个路径框左侧点击 **＋**，可在下方增加第二、第三个路径框。第一项是主池，其他项是备份池；移除路径框只修改配置，不删除文件。保存后生效。目录必须相互独立，不能相同，也不能互相包含。
 
@@ -272,7 +282,7 @@ UniProt expressions can query UniProt to resolve sequences and display names. A 
 
 `MSA_BACKUP_DIRS` 默认是 `[]`，最多两项。路径展开 `~`，相对路径以启动目录为基准，建议填绝对路径。请事先创建备份目录，并确保登录节点和计算节点都能读写；设置检查和启动扫描不会创建它们。使用同事的目录前，应由双方约定共享范围和访问权限。无需安装或配置 rsync。
 
-## 新产物备份与已有文件同步
+### 新产物备份与已有文件同步
 
 **新计算的产物：** AF3 先在主池内完成写入；校验通过后，将完整产物复制到每个已配置的备份池。保留 AF3 的目录、JSON 文件名和附带文件，继续兼容原生目录、时间戳目录及旧版平铺文件。备份按任务提交时的配置快照执行，之后修改设置不会改变排队任务的目的地。
 
@@ -290,7 +300,7 @@ UniProt expressions can query UniProt to resolve sequences and display names. A 
 
 多个目录增加了副本，但同一存储设备上的副本不能防止设备整体损坏。同步没有版本删除/恢复功能；需要历史版本或灾难恢复时，应结合存储系统已有的快照和备份服务。
 
-## 复用之前的检查
+### 复用之前的检查
 
 程序区分两类情况：
 
