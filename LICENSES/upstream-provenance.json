@@ -1,0 +1,98 @@
+{
+  "verified_date": "2026-09-13",
+  "historical_adaptation_revision": "not recorded",
+  "records": {
+    "LGPL-2.1-only.txt": {
+      "url": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+      "bytes": 26419
+    },
+    "Apache-2.0.txt": {
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "BSD-3-Clause-NetworkX.txt": {
+      "url": "https://raw.githubusercontent.com/networkx/networkx/4e74880b0da01977da79915167c64e5c2af38b47/LICENSE.txt",
+      "sha256": "6025f323ea29dc2f0ee0abd9523bf910186f55b0e148e6ebf646c55566278e2e",
+      "bytes": 1763
+    },
+    "font_archive": {
+      "url": "https://downloads.sourceforge.net/project/wqy/wqy-microhei/0.2.0-beta/wqy-microhei-0.2.0-beta.tar.gz",
+      "sha256": "2802ac8023aa36a66ea6e7445854e3a078d377ffff42169341bd237871f7213e",
+      "bytes": 2418536,
+      "bundled_font_sha256": "e4bca8df123ce01b104780f576ea1a58b9a5ff1662a91124b6d3180cb6c88212"
+    },
+    "networkx_queue": {
+      "url": "https://raw.githubusercontent.com/networkx/networkx/4e74880b0da01977da79915167c64e5c2af38b47/networkx/utils/mapped_queue.py",
+      "sha256": "59d211936ec3fc0ae63ecf6d769bd02d0095e139aeb36d76050871b0520c6209",
+      "bytes": 10184,
+      "definitions": {
+        "_HeapElement": [
+          8,
+          88
+        ],
+        "MappedQueue": [
+          91,
+          297
+        ]
+      }
+    },
+    "networkx_cnm": {
+      "url": "https://raw.githubusercontent.com/networkx/networkx/4e74880b0da01977da79915167c64e5c2af38b47/networkx/algorithms/community/modularity_max.py",
+      "sha256": "784d22ab83b3a8af25a80eb35570d0e80b8a7749d0240ff36965f62e624881bd",
+      "bytes": 18053,
+      "definitions": {
+        "_greedy_modularity_communities_generator": [
+          15,
+          222
+        ],
+        "greedy_modularity_communities": [
+          226,
+          353
+        ]
+      }
+    },
+    "chimerax_pae": {
+      "url": "https://raw.githubusercontent.com/RBVI/ChimeraX/c1ed3a0c0c36cb880e7292cc429e6f74afd8b999/src/bundles/alphafold/src/pae.py",
+      "sha256": "5d476f5dcce02c3e5ca52df1e428a02eeeb4d72c9d89ec43daebf57dd45dacbb",
+      "bytes": 62903,
+      "definitions": {
+        "pae_domains": [
+          1410,
+          1435
+        ]
+      }
+    },
+    "WenQuanYi-MicroHei-README.txt": {
+      "archive_member": "wqy-microhei/README.txt",
+      "archive": "font_archive",
+      "sha256": "9b1f9a3d90f88041387700498296fc89d6d600d0ebc9b6258c119dd192eaf6b9",
+      "bytes": 20027
+    },
+    "WenQuanYi-MicroHei-AUTHORS.txt": {
+      "archive_member": "wqy-microhei/AUTHORS.txt",
+      "archive": "font_archive",
+      "sha256": "e980452a04c9e9dd7d6f0d8f72dd4c960f312207d64b849b73347beb02b9c3fa",
+      "bytes": 363560
+    },
+    "WenQuanYi-MicroHei-LICENSE_Apache2.txt": {
+      "archive_member": "wqy-microhei/LICENSE_Apache2.txt",
+      "archive": "font_archive",
+      "sha256": "1c19d8eb506a0e9d501d882fc9fe94eca99bc7b2f69f5e64fa79b7ec48cee54d",
+      "bytes": 10319
+    },
+    "WenQuanYi-MicroHei-LICENSE_GPLv3.txt": {
+      "archive_member": "wqy-microhei/LICENSE_GPLv3.txt",
+      "archive": "font_archive",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "bytes": 35147
+    },
+    "ChimeraX-PAE-COPYRIGHT.txt": {
+      "source": "chimerax_pae",
+      "section": "Complete original file copyright header",
+      "sha256": "4b057467c7131fb917a7b0d5d6e7fd4e62b8cc9e947b0059e243935a7b7e57f4",
+      "bytes": 1124
+    }
+  }
+}

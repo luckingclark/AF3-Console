@@ -1,0 +1,14 @@
+flowchart TB
+    accTitle: Run Pulldown And Scan Overview
+    accDescr: The three modes prepare specified inputs, group combinations or fragment combinations, then reuse or prepare MSA, run GPU predictions and summarize results. Scan offers fixed and PAE-guided windows.
+    inputs["Input proteins or complexes"] --> run["Run<br/>Predict specified inputs"]
+    inputs --> pulldown["Pulldown<br/>Screen two-group combinations"]
+    inputs --> scan["Scan<br/>Fragment screening"]
+    scan --> window_scan["Fixed windows<br/>Length and overlap"]
+    scan --> pae_scan["PAE-guided<br/>Domain windows"]
+    run --> prepare_msa["MSA<br/>Reuse or prepare"]
+    pulldown --> prepare_msa
+    window_scan --> prepare_msa
+    pae_scan --> prepare_msa
+    prepare_msa --> predict["GPU inference<br/>Predict structures"]
+    predict --> results(["Results<br/>Structures, confidence and summaries"])

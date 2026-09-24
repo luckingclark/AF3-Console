@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If this software helps your work, please cite this software and the upstream methods you use."
+type: software
+title: AF3 Console
+version: 0.1.0
+repository-code: https://github.com/luckingclark/AF3-Console
+authors:
+  - name: PKU-Gaolab
+  - family-names: Lu
+    given-names: Ming-Ao
+abstract: A bilingual desktop and command-line workbench for AlphaFold 3 workflows on Slurm clusters.
+keywords:
+  - AlphaFold 3
+  - Slurm
+  - graphical user interface
+  - PAE
+# No formal release date or DOI is claimed.

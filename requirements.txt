@@ -1,0 +1,11 @@
+# External dependencies only; AF3 inference runs in your separately supplied container.
+# Recommended Python: 3.12. Tested versions/platforms are recorded in docs/validation.md.
+PySide6>=6.6,<7
+numpy>=1.26,<3
+pandas>=2.2,<4
+matplotlib>=3.8,<4
+six>=1.16,<2
+python-dateutil>=2.9,<3
+zstandard>=0.23,<1
+# Optional icons (the UI also works without this package).
+qtawesome>=1.3,<2

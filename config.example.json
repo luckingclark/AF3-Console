@@ -1,0 +1,13 @@
+{
+  "HOST_BASE": "~/AF3",
+  "HOST_SIF": "/path/to/your/alphafold3.sif",
+  "HOST_MODELS": "/path/to/your/model_parameters",
+  "HOST_DB_SOURCE": "/path/to/your/public_databases",
+  "MSA_BACKUP_DIRS": [],
+  "MSA_PARTITION": "your_cpu_partition",
+  "INF_PARTITION": "your_gpu_partition",
+  "INF_FALLBACK_PARTITION": "",
+  "HOST_SSD_CACHE": "",
+  "CONTAINER_RUNTIME": "singularity",
+  "CONTAINER_MODULE": ""
+}

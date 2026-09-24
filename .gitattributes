@@ -1,0 +1,13 @@
+* text=auto
+*.py text eol=lf
+af3_gui text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.mmd text eol=lf
+*.svg text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+*.cff text eol=lf
+*.png binary
+*.ttc binary

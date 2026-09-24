@@ -1,0 +1,55 @@
+{
+  "release": "0.1.0",
+  "date": "2026-09-24",
+  "status": "passed",
+  "tests_run": 191,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 1,
+  "platform": "Windows",
+  "python": "3.12.0",
+  "dependencies": {
+    "PySide6": "6.11.1",
+    "shiboken6": "6.11.1",
+    "numpy": "2.3.5",
+    "pandas": "3.0.5",
+    "matplotlib": "3.11.1",
+    "six": "1.17.0",
+    "python-dateutil": "2.9.0.post0",
+    "qtawesome": "1.4.2",
+    "networkx": "3.6.1",
+    "zstandard": "0.25.0"
+  },
+  "network_access_required_by_tests": false,
+  "real_cluster_tested": false,
+  "linux_ci_executed": false,
+  "unchanged_pae_functions_ast_compared": 10,
+  "original_baseline_files_unchanged": true,
+  "readme_diagrams": {
+    "diagrams": 2,
+    "themes": [
+      "light page background",
+      "dark page background"
+    ],
+    "renders_passed": 4,
+    "renderer": "Self-contained SVG in local headless Chromium",
+    "github_render_checked": false,
+    "source_format": "Mermaid with a deterministic Python SVG generator",
+    "presentation_palette": "light on both page backgrounds"
+  },
+  "release_preparation_review": {
+    "source_files": 80,
+    "runtime_files": 48,
+    "unlisted_source_files": 0,
+    "private_denylist_audit": "passed"
+  },
+  "tests_passed": 190,
+  "skip_reason": "One real symlink test requires OS privileges unavailable on the Windows validation host; mocked symlink/junction safety checks passed.",
+  "msa_pools": {
+    "max_directories": 3,
+    "add_only_sync": true,
+    "native_cluster_filesystem_tested": false,
+    "empty_field_decision_tested": true,
+    "occupied_output_preservation_tested": true
+  }
+}

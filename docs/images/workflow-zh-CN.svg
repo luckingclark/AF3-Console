@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="848" viewBox="0 0 1200 848" role="img" aria-labelledby="title description">
+<title id="title">Run Pulldown 和 Scan 模式总览</title>
+<desc id="description">三种模式分别准备指定任务、两组组合或片段组合，随后复用或准备 MSA，进行 GPU 预测并汇总结果。Scan 包含固定窗口和 PAE 引导两种方式。</desc>
+<defs>
+  <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#fbfbfd"/><stop offset="1" stop-color="#f0f2f7"/>
+  </linearGradient>
+  <linearGradient id="scan-card" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f5fbfa"/>
+  </linearGradient>
+  <filter id="shadow" x="-15%" y="-20%" width="130%" height="150%">
+    <feDropShadow dx="0" dy="10" stdDeviation="13" flood-color="#1c2748" flood-opacity="0.055"/>
+  </filter>
+  <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M1 1 L6 4 L1 7" fill="none" stroke="#a3a9b5" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<style>
+  text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif; }
+  .wire { fill:none;stroke:#c1c6d0;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round; }
+</style>
+<rect x="1" y="1" width="1198" height="846" rx="36" fill="url(#canvas)" stroke="#e5e7ee"/>
+
+<text x="64" y="59" font-size="17" font-weight="600" fill="#777c88" text-anchor="start" letter-spacing="2.5">AF3 CONSOLE</text>
+<text x="1136" y="59" font-size="16" font-weight="500" fill="#8b909c" text-anchor="end" letter-spacing="1">模式总览</text>
+<rect x="368" y="100" width="464" height="66" rx="33" fill="#ffffff" stroke="#e9ebf0" filter="url(#shadow)"/>
+<text x="600" y="141" font-size="25" font-weight="550" fill="#1d1d1f" text-anchor="middle">输入蛋白或复合物</text>
+<path class="wire" d="M600 166 V198"/>
+<path class="wire" d="M232 224 V214 Q232 198 248 198 H952 Q968 198 968 214 V224" marker-end="url(#arrow)"/>
+<path class="wire" d="M232 214 V224" marker-end="url(#arrow)"/>
+<path class="wire" d="M600 198 V224" marker-end="url(#arrow)"/>
+<g id="run">
+<rect x="64" y="232" width="336" height="300" rx="28" fill="#ffffff" stroke="#e9ebf0" filter="url(#shadow)"/>
+<rect x="92" y="260" width="28" height="4" rx="2" fill="#007aff"/>
+<text x="92" y="315" font-size="42" font-weight="650" fill="#1d1d1f" text-anchor="start">Run</text>
+<text x="92" y="353" font-size="23" font-weight="400" fill="#777c87" text-anchor="start">预测指定输入</text>
+<g fill="none" stroke="#007aff" stroke-width="2"><path d="M336 288 L354 276"/><circle cx="333" cy="290" r="6"/><circle cx="357" cy="274" r="6"/></g>
+</g>
+<g id="pulldown">
+<rect x="432" y="232" width="336" height="300" rx="28" fill="#ffffff" stroke="#e9ebf0" filter="url(#shadow)"/>
+<rect x="460" y="260" width="28" height="4" rx="2" fill="#a44ed6"/>
+<text x="460" y="315" font-size="42" font-weight="650" fill="#1d1d1f" text-anchor="start">Pulldown</text>
+<text x="460" y="353" font-size="23" font-weight="400" fill="#777c87" text-anchor="start">两组输入组合筛选</text>
+<rect x="701" y="270" width="8" height="8" rx="2.5" fill="#a44ed6" opacity="0.8"/>
+<rect x="701" y="286" width="8" height="8" rx="2.5" fill="#a44ed6" opacity="0.8"/>
+<rect x="717" y="270" width="8" height="8" rx="2.5" fill="#a44ed6" opacity="0.8"/>
+<rect x="717" y="286" width="8" height="8" rx="2.5" fill="#a44ed6" opacity="0.8"/>
+</g>
+<g id="scan">
+<rect x="800" y="232" width="336" height="300" rx="28" fill="url(#scan-card)" stroke="#e9ebf0" filter="url(#shadow)"/>
+<rect x="828" y="260" width="28" height="4" rx="2" fill="#139b91"/>
+<text x="828" y="315" font-size="42" font-weight="650" fill="#1d1d1f" text-anchor="start">Scan</text>
+<text x="828" y="353" font-size="21" font-weight="400" fill="#777c87" text-anchor="start">片段扫描</text>
+<g fill="none" stroke="#139b91" stroke-width="2.5" stroke-linecap="round"><path d="M1068 274 H1094 M1068 290 H1094"/><path d="M1076 269 V279 M1086 285 V295"/></g>
+</g>
+<g id="window_scan">
+<rect x="824" y="379" width="288" height="58" rx="15" fill="#f2f7f7" stroke="#e6eeee"/>
+<text x="842" y="404" font-size="21" font-weight="550" fill="#246f6a" text-anchor="start">固定窗口</text>
+<text x="842" y="425" font-size="17" font-weight="400" fill="#788988" text-anchor="start">长度与重叠</text>
+</g>
+<g id="pae_scan">
+<rect x="824" y="450" width="288" height="58" rx="15" fill="#f2f7f7" stroke="#e6eeee"/>
+<text x="842" y="475" font-size="21" font-weight="550" fill="#246f6a" text-anchor="start">PAE 引导</text>
+<text x="842" y="496" font-size="17" font-weight="400" fill="#788988" text-anchor="start">结构域窗口</text>
+</g>
+<path class="wire" d="M232 532 V556 Q232 578 254 578 H946 Q968 578 968 556 V532"/>
+<path class="wire" d="M600 532 V610" marker-end="url(#arrow)"/>
+<rect x="64" y="620" width="1072" height="174" rx="28" fill="#ffffff" stroke="#e9ebf0" filter="url(#shadow)"/>
+<text x="600" y="653" font-size="16" font-weight="500" fill="#9095a1" text-anchor="middle" letter-spacing="1.2">共用预测流程</text>
+<g id="prepare_msa">
+<text x="238" y="708" font-size="27" font-weight="600" fill="#007aff" text-anchor="middle">MSA</text>
+<text x="238" y="741" font-size="19" font-weight="400" fill="#818692" text-anchor="middle">复用或计算</text>
+</g>
+<g id="predict">
+<text x="600" y="708" font-size="27" font-weight="600" fill="#1d1d1f" text-anchor="middle">GPU 预测</text>
+<text x="600" y="741" font-size="19" font-weight="400" fill="#818692" text-anchor="middle">生成结构</text>
+</g>
+<g id="results">
+<text x="962" y="708" font-size="27" font-weight="600" fill="#1d1d1f" text-anchor="middle">结果</text>
+<text x="962" y="741" font-size="19" font-weight="400" fill="#818692" text-anchor="middle">结构、置信度与汇总</text>
+</g>
+<path class="wire" d="M400 710 H440" marker-end="url(#arrow)"/>
+<path class="wire" d="M762 710 H802" marker-end="url(#arrow)"/>
+</svg>

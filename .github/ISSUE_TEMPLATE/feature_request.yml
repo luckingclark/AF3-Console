@@ -1,0 +1,14 @@
+name: Feature request
+description: Suggest a focused workflow improvement.
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Workflow and desired behavior
+      description: Describe the need without disclosing research targets or unpublished results.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Existing alternatives and tradeoffs

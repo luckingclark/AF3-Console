@@ -1,0 +1,3 @@
+-r requirements.txt
+# Independent reference for PAE clustering tests; not a runtime dependency.
+networkx>=3.2,<4
