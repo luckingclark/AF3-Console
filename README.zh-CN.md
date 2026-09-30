@@ -33,7 +33,11 @@ af3_gui
 
 当前版本 **0.1.0（预发布）**。[Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227)：**191 项测试全部通过，0 跳过**。[验收记录](docs/validation.md)列出实际完成的检查及待验证事项；真实 Slurm／AF3 运行、全新 Linux Conda 安装、GPU 容量和跨集群兼容性仍需部署验收。本仓库不分发 AF3 引擎、权重、数据库或课题数据。
 
-**离线序列：** 将 UniProt 索引放在“应用缓存目录”下的 `uniprot/uniprot.sqlite3`，程序会在联网前自动读取；设置页也支持只读共享序列目录。操作见[离线配置](docs/usage.zh-CN.md#uniprot-离线序列与共享序列库)。数据包与程序分开提供。
+## 集群无法连接 UniProt 时使用离线序列库
+
+抓取序列时若出现 `Name or service not known` 或 `Resolving timed out`，可在能联网的电脑上下载[四物种离线序列库](https://github.com/luckingclark/AF3-Console/releases/tag/uniprot-4species-20260930-isoform-fix)并传到集群。修正版 ZIP 约 **58 MB**，包含大肠杆菌 K-12 MG1655、人、小鼠、酿酒酵母 S288C 共 **243,492 条序列**，以及 **15,904 条官方 canonical isoform 映射**，数据版本为 UniProt **2026_03**。
+
+将包内的 `uniprot/` 放到**应用缓存目录**下，默认索引位置是 `~/AF3/cache/uniprot/uniprot.sqlite3`，保留已有 `.seq` 文件。实验室可在设置页指定一份只读共享库；已支持离线库的程序只需更新数据，不用重装 Conda。详见[安装、校验、共享与成功标志](docs/usage.zh-CN.md#uniprot-离线序列与共享序列库)。数据包为可选下载，与仓库 ZIP 分开提供，不包含 MSA 结果、AF3 搜索数据库或权重；UniProt 数据保留 **CC BY 4.0** 署名条款。
 
 ## 作者、许可与引用
 

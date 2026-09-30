@@ -33,7 +33,11 @@ Real predictions require **Linux + Slurm**, a separately obtained AF3 container,
 
 Version **0.1.0 — pre-release**. [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227): **191 tests passed, 0 skipped**. See the [validation record](docs/validation.md) for checks performed and remaining gaps. Real Slurm/AF3 execution, a fresh Linux Conda installation, GPU capacity and cross-cluster compatibility still require deployment validation. This repository does not distribute AF3, weights, databases or research datasets.
 
-**Offline sequences:** an indexed UniProt library at `<application cache>/uniprot/uniprot.sqlite3` is used automatically before network access. Setup also supports a read-only shared sequence directory. See [offline setup](docs/usage.en.md#offline-uniprot-sequences-and-shared-libraries). The data bundle is separate from the application.
+## Offline sequence library for clusters without UniProt access
+
+If sequence retrieval reports `Name or service not known` or `Resolving timed out`, install the optional [four-species offline library](https://github.com/luckingclark/AF3-Console/releases/tag/uniprot-4species-20260930-isoform-fix) using an internet-connected computer to download and transfer it. The corrected ZIP is about **58 MB**: **243,492 sequences** from E. coli K-12 MG1655, human, mouse and S. cerevisiae S288C, plus **15,904 official canonical isoform mappings** (UniProt **2026_03**).
+
+Place its `uniprot/` folder under **Application cache** (default index: `~/AF3/cache/uniprot/uniprot.sqlite3`), preserving existing `.seq` files. A lab can share one read-only copy through Settings. Existing offline-capable installations need only the corrected data, with no Conda reinstall. See [installation, checksum verification, sharing and success checks](docs/usage.en.md#offline-uniprot-sequences-and-shared-libraries). This optional download is separate from the repository ZIP; it does not contain MSA results, AF3 search databases or weights. UniProt data retain **CC BY 4.0** attribution terms.
 
 ## Author, licensing and citation
 
