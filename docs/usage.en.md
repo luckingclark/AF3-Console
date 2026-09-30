@@ -2,13 +2,13 @@
 
 [Chinese guide](usage.zh-CN.md) · [Home](../README.md) · [Input formats](#input-formats)
 
-For **0.1.0, deployment edition 2026-09-24**. Install the environment from the repository root, then enter `AF3_Console/` to configure and run. Download the complete current main branch; do not mix it with the older September 12 five-file package.
+For **0.1.0, deployment edition 2026-09-30**. Install the environment from the repository root, then enter `AF3_Console/` to configure and run. Download the complete current main branch; do not mix it with the older September 12 five-file package.
 
 ## Before installing
 
 You need access to a **Linux Slurm cluster**, an AlphaFold 3 **Singularity container**, its separately obtained **model parameters and databases**, and a Python environment visible to the compute nodes. The GUI uses **X11 forwarding**. AF3 Console supplies the UI and orchestration scripts; it does not include the prediction engine, GPU drivers, parameters, databases, or a Python environment.
 
-Desktop preview and synthetic tests can run without those cluster resources. Real prediction jobs require a working cluster deployment. This is an early release: the exact checks performed and untested deployment boundaries are listed in [validation](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/validation.md).
+Desktop preview and synthetic tests can run without those cluster resources. Real prediction jobs require a working cluster deployment. This is an early release: the exact checks performed and untested deployment boundaries are listed in [validation](https://github.com/luckingclark/AF3-Console/blob/9c11d701f7ba70c04efb578d19cbff5c106e3c33/docs/validation.md).
 
 ## Download and install
 
@@ -35,6 +35,16 @@ cd /path/to/your/af3-console/AF3_Console
 Conda is the recommended route for cluster installations. Dependency ranges are declared, rather than exporting a developer's environment or private package-channel URLs. Older Linux/glibc installations may require a separately validated environment; no blanket compatibility claim is made.
 
 ## Configure your resources
+
+### Import an existing configuration in the GUI (recommended)
+
+If a colleague supplies a configuration JSON, upload it to your cluster account and launch the GUI normally. In Setup, choose **Import configuration JSON**, select the file, adjust your own workspace and other fields, choose **Check resources**, then **Save user settings**.
+
+Import fills the settings without writing files. Saving writes the personal default `~/.config/af3_console/config.json`; an existing file is backed up with a `before-import` suffix. The template is not selected as the save destination. Imported MSA thread counts, compilation buckets and other parameters absent from the form are retained. Unknown fields or invalid values are reported rather than silently discarded.
+
+After this one-time setup, ordinary GUI launches read your personal settings automatically; no repeated import or `AF3_CONFIG` is needed. Saving an import switches this GUI and its future child processes to personal defaults; submitted jobs retain their snapshots. If `.bashrc` or a launch script sets `AF3_CONFIG` / `AF3_BASE`, remove those overrides once. The application does not edit shell startup files.
+
+### Manual configuration (optional)
 
 Either fill out **Setup** in the GUI or copy the example to your user configuration:
 

@@ -79,8 +79,8 @@ python -B af3_gui
 
 ## 配置并完成第一次预测
 
-1. 在**设置**中填写工作目录（默认 `~/AF3`）、AF3 容器文件、模型参数目录、数据库目录，以及实际可用的 CPU／GPU 分区。使用真实集群路径，不要保留 `/path/to/your/...` 占位符。[config.example.json](../AF3_Console/config.example.json)用于说明字段，并非可直接提交作业的集群配置。
-2. 点击**检测资源**，解决提示的问题后保存。个人设置通常写入 `~/.config/af3_console/config.json`。`AF3_CONFIG` 可指定其他配置文件，`AF3_BASE` 可覆盖工作目录；无需 `.env` 文件。优先级详见[配置说明](usage.zh-CN.md#precedence-and-persistence)。
+1. 已有配置 JSON 时，在**设置**中点击**导入配置 JSON**，再按自己的账号修改；也可手动填写。设置工作目录（默认 `~/AF3`）、AF3 容器文件、模型参数目录、数据库目录，以及实际可用的 CPU／GPU 分区。使用真实集群路径，不要保留 `/path/to/your/...` 占位符。[config.example.json](../AF3_Console/config.example.json)用于说明字段，并非可直接提交作业的集群配置。
+2. 点击**检测资源**，解决提示的问题后保存。导入配置会保存为个人默认设置，下次自动读取，不会将模板选为保存位置。个人设置通常写入 `~/.config/af3_console/config.json`。`AF3_CONFIG` 可指定其他配置文件，`AF3_BASE` 可覆盖工作目录；无需 `.env` 文件。优先级详见[配置说明](usage.zh-CN.md#precedence-and-persistence)。
 3. 从 **Run** 和你自己的小规模输入开始。预测两蛋白复合物时，用 `+` 连接两个实际 UniProt ID；也可按[输入规范](usage.zh-CN.md#输入规范)提供 AF3 输入 JSON。UniProt 表达式可能需要联网获取序列。
 4. 先**预览**，核对任务数量、运行阶段和 seeds。预览／CLI `--dry-run` 不提交作业，但可能获取序列及检查缓存，不一定是离线操作。
 5. **提交**后在仪表盘查看任务状态。Slurm 作业编号仅表示提交成功；完整预测还需确认任务完成，并检查下文的结构和置信度文件。
@@ -109,9 +109,11 @@ python -B af3_gui
 
 ## 验证范围
 
-[Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333) 在 Ubuntu 24.04、Python 3.12 下通过部署检查和 **191 项测试，0 跳过**，包括运行文件与源码一致性、隔离启动、离线许可证、人工数据与模拟调度检查。这些不代表已在你的集群完成真实 AF3 预测。
+2026-09-30 的配置导入更新在本地 Windows 通过 194 项测试，1 项符号链接测试因平台权限跳过；其中新增 4 项测试覆盖导入、修改、保存及新进程自动读取。
 
-真实 Slurm／AF3 执行、全新 Linux Conda 安装、交互式 X11 使用、GPU token 上限和跨集群兼容性仍需部署验收。参见[验收记录](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/validation.md)。本项目不声称比[相关工具](comparison.zh-CN.md)有性能优势。
+此前的 [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333) 在 Ubuntu 24.04、Python 3.12 下通过部署检查和 **191 项测试，0 跳过**，包括运行文件与源码一致性、隔离启动、离线许可证、人工数据与模拟调度检查。这些不代表已在你的集群完成真实 AF3 预测。
+
+真实 Slurm／AF3 执行、全新 Linux Conda 安装、交互式 X11 使用、GPU token 上限和跨集群兼容性仍需部署验收。参见[验收记录](https://github.com/luckingclark/AF3-Console/blob/9c11d701f7ba70c04efb578d19cbff5c106e3c33/docs/validation.md)。本项目不声称比[相关工具](comparison.zh-CN.md)有性能优势。
 
 ## 作者、许可与引用
 

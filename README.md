@@ -79,8 +79,8 @@ Success at this stage means the main window opens and **Settings** and **Help â†
 
 ## Configure and make your first prediction
 
-1. In **Settings**, set the work directory (default `~/AF3`), AF3 container file, model-parameter directory, database directory, and your CPU/GPU partitions. Use actual cluster paths, not `/path/to/your/...` placeholders. [config.example.json](AF3_Console/config.example.json) describes the configuration fields; it is not a working cluster configuration.
-2. Choose **Check resources**, resolve reported problems, and save. Personal settings normally go to `~/.config/af3_console/config.json`. `AF3_CONFIG` selects a different configuration file; `AF3_BASE` overrides the work directory. No `.env` file is required. See [configuration precedence](docs/usage.en.md#precedence-and-persistence).
+1. If you have a configuration JSON, choose **Import configuration JSON** in **Settings**, then adjust it for your account. Otherwise, enter the settings manually. Set the work directory (default `~/AF3`), AF3 container file, model-parameter directory, database directory, and your CPU/GPU partitions. Use actual cluster paths, not `/path/to/your/...` placeholders. [config.example.json](AF3_Console/config.example.json) describes the configuration fields; it is not a working cluster configuration.
+2. Choose **Check resources**, resolve reported problems, and save. An imported configuration is saved as your personal default and read automatically on later launches; the template is not selected as the save destination. Personal settings normally go to `~/.config/af3_console/config.json`. `AF3_CONFIG` selects a different configuration file; `AF3_BASE` overrides the work directory. No `.env` file is required. See [configuration precedence](docs/usage.en.md#precedence-and-persistence).
 3. Start with **Run** and a small input of your own. For a two-protein complex, join your two actual UniProt IDs with `+`; alternatively use an AF3 input JSON following the [input guide](docs/usage.en.md#input-formats). UniProt expressions can require network access to retrieve sequences.
 4. **Preview** the plan and check the task count, stage and seeds before submitting. Preview / CLI `--dry-run` does not submit jobs, but may retrieve sequences and inspect caches; it is not necessarily offline.
 5. **Submit**, then follow the job in the Dashboard. A Slurm job ID confirms submission only. For a full prediction, confirm successful completion and inspect the generated structure and confidence files described below.
@@ -109,9 +109,11 @@ Missing results, failed tasks or a partial ranking are not a completed screen. S
 
 ## Validation and scope
 
-[Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333) passed the deployment checks and **191 tests, with 0 skipped**, using Python 3.12 on Ubuntu 24.04. Checks include runtime/source consistency, isolated startup, offline licenses, artificial data and mocked scheduling. They do not establish successful execution of a real AF3 prediction on your cluster.
+The 2026-09-30 import update passed 194 local Windows tests, with one platform-specific symlink test skipped. Its four new tests cover importing, editing, saving and reading personal settings in a fresh process.
 
-Real Slurm/AF3 execution, a fresh Linux Conda installation, interactive X11 use, GPU token limits and cross-cluster compatibility still require deployment validation. See the [validation record](https://github.com/luckingclark/AF3-Console/blob/03c29106fd23b20928c9591b35b22b2508c9adfd/docs/validation.md). No performance advantage over the [related tools](docs/comparison.md) is claimed.
+The previous [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333) passed the deployment checks and **191 tests, with 0 skipped**, using Python 3.12 on Ubuntu 24.04. Checks include runtime/source consistency, isolated startup, offline licenses, artificial data and mocked scheduling. They do not establish successful execution of a real AF3 prediction on your cluster.
+
+Real Slurm/AF3 execution, a fresh Linux Conda installation, interactive X11 use, GPU token limits and cross-cluster compatibility still require deployment validation. See the [validation record](https://github.com/luckingclark/AF3-Console/blob/9c11d701f7ba70c04efb578d19cbff5c106e3c33/docs/validation.md). No performance advantage over the [related tools](docs/comparison.md) is claimed.
 
 ## Author, licensing and citation
 
