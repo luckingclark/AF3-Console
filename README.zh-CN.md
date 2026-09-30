@@ -33,6 +33,8 @@ af3_gui
 
 当前版本 **0.1.0（预发布）**。[Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227)：**191 项测试全部通过，0 跳过**。[验收记录](docs/validation.md)列出实际完成的检查及待验证事项；真实 Slurm／AF3 运行、全新 Linux Conda 安装、GPU 容量和跨集群兼容性仍需部署验收。本仓库不分发 AF3 引擎、权重、数据库或课题数据。
 
+**离线序列：** 将 UniProt 索引放在“应用缓存目录”下的 `uniprot/uniprot.sqlite3`，程序会在联网前自动读取；设置页也支持只读共享序列目录。操作见[离线配置](docs/usage.zh-CN.md#uniprot-离线序列与共享序列库)。数据包与程序分开提供。
+
 ## 作者、许可与引用
 
 本项目代码利用 **Kimi-K3 和 GPT-6**，通过 AI 辅助的 **vibe coding** 方式完成。项目作者：**PKU-Gaolab, Ming-Ao Lu**。可通过 Issues／Pull requests 反馈问题或提交修改，请先脱敏日志和截图；开发检查见[指南](docs/usage.zh-CN.md#开发与反馈)。

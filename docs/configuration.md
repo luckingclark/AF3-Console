@@ -15,6 +15,7 @@ The program and the data have separate locations. Keep the installation and its 
 | `MSA_BACKUP_DIRS` | Up to two independent backup pools / 最多两个独立备份池 | `[]` by default; list of directory paths |
 | `HOST_INFER_DATA` | Full-length inference pool / 全长推理池 | Derived from `HOST_BASE/infer_data` |
 | `HOST_CACHE` | General cache / 一般缓存 | Derived from `HOST_BASE/cache` |
+| `HOST_UNIPROT_SHARED` | Optional read-only sequence library / 可选只读共享序列库 | Folder containing `uniprot.sqlite3` or `ID.seq`; empty disables sharing |
 | `HOST_JAX_CACHE` | Compilation cache / 编译缓存 | Derived from `HOST_BASE/af3_buckets_cache` |
 | `HOST_SSD_CACHE` | Optional node-local database cache / 可选节点 SSD | Empty disables this feature |
 

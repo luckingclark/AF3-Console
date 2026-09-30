@@ -1306,10 +1306,11 @@ class App(QtWidgets.QMainWindow):
                        ("HOST_MSA_DATA", "MSA data pool (derived, editable)"),
                        ("HOST_MODELS", "Model weights (derived, editable)"),
                        ("HOST_CACHE", "Cache dir (derived, editable)"),
+                       ("HOST_UNIPROT_SHARED", "Shared UniProt sequences (optional, read-only)"),
                        ("HOST_JAX_CACHE", "JAX compile cache (derived, editable)")]:
             e = UI.QLineEdit(str(cfg["editable"].get(k) or cfg["derived"].get(k) or ""))
             e.setMinimumWidth(220)
-            e.setPlaceholderText("/path/to/your/" + {"HOST_OUTPUT":"results", "HOST_MSA_DATA":"msa_pool", "HOST_MODELS":"af3_models", "HOST_CACHE":"application_cache", "HOST_JAX_CACHE":"jax_cache"}[k])
+            e.setPlaceholderText("/path/to/your/" + {"HOST_OUTPUT":"results", "HOST_MSA_DATA":"msa_pool", "HOST_MODELS":"af3_models", "HOST_CACHE":"application_cache", "HOST_UNIPROT_SHARED":"shared_uniprot", "HOST_JAX_CACHE":"jax_cache"}[k])
             e.textEdited.connect(lambda _t="", kk=k: self._setup_derived_dirty.add(kk))
             rw = QtWidgets.QHBoxLayout()
             if k == "HOST_MSA_DATA":

@@ -158,6 +158,7 @@ Output dir (derived, editable)|结果目录
 MSA data pool (derived, editable)|MSA 缓存目录
 Model weights (derived, editable)|模型权重目录
 Cache dir (derived, editable)|应用缓存目录
+Shared UniProt sequences (optional, read-only)|共享 UniProt 序列目录（可选，只读）
 JAX compile cache (derived, editable)|JAX 编译缓存目录
 Program location (fixed)|程序位置（固定）
 Python (provided by installation)|Python（随安装包提供）

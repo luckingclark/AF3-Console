@@ -126,8 +126,9 @@ HOST_MSA_DATA   = HOST_BASE + "/msa_data"     # Native AF3 outputs: {key}/{key}_
 MSA_BACKUP_DIRS = []                         # Up to two add-only copies of complete MSA products.
 HOST_INFER_DATA = HOST_BASE + "/infer_data"   # 单体全长 infer 产物池 <key>/(scan --mode pae 复用)
 HOST_OUTPUT     = HOST_BASE + "/output"       # 一次提交 = 一个自包含目录
-HOST_CACHE      = HOST_BASE + "/cache"        # 纯缓存(可随便删)
+HOST_CACHE      = HOST_BASE + "/cache"        # Sequences, optional offline library and input assets.
 UNIPROT_CACHE   = HOST_CACHE + "/uniprot"
+HOST_UNIPROT_SHARED = ""                      # Optional read-only .seq / SQLite library directory.
 HOST_JAX_CACHE  = HOST_BASE + "/af3_buckets_cache"      # JAX 编译缓存(预热桶,勿删)
 # --- 旧布局路径(已废弃,仅供 status / profile 读取历史数据;不再写入) ---
 HOST_LOGS       = HOST_OUTPUT + "/.logs"      # 旧:非批次日志根
@@ -204,6 +205,11 @@ def deployment_checks(config=None, require_msa=True, require_infer=True,
         path = values.get(key, "")
         valid = bool(path) and (os.path.isfile(path) if is_file else os.path.isdir(path)) and os.access(path, os.R_OK)
         add(key, valid, key + (" must be a readable file." if is_file else " must be a readable directory."))
+    shared_sequences = values.get("HOST_UNIPROT_SHARED", "")
+    if shared_sequences:
+        add("HOST_UNIPROT_SHARED", not _is_placeholder_setting("HOST_UNIPROT_SHARED", shared_sequences)
+            and os.path.isdir(shared_sequences) and os.access(shared_sequences, os.R_OK | os.X_OK),
+            "The shared UniProt directory must be readable and traversable; no write permission is needed.")
     writable = ["HOST_BASE", "HOST_OUTPUT", "HOST_CACHE"]
     if require_msa:
         writable.append("HOST_MSA_DATA")
@@ -440,14 +446,13 @@ def _dir_pending_scaffolding(out_dir):
 # ============================================================================
 
 def fetch_uniprot(uniprot_id):
-    """抓取 UniProt 序列,磁盘缓存于 cache/uniprot/。"""
-    os.makedirs(UNIPROT_CACHE, exist_ok=True)
+    """个人缓存 -> 本地离线索引 -> 共享序列库 -> UniProt。"""
+    uniprot_id = uniprot_id.upper()
+    seq = R.cached_uniprot_sequence(uniprot_id, UNIPROT_CACHE, HOST_UNIPROT_SHARED,
+        on_warning=lambda message: print('WARNING: ' + message, file=sys.stderr))
+    if seq:
+        return seq
     cache_file = os.path.join(UNIPROT_CACHE, f"{uniprot_id}.seq")
-    if os.path.isfile(cache_file):
-        with open(cache_file) as f:
-            seq = f.read().strip()
-        if seq:
-            return seq
     url = f"https://rest.uniprot.org/uniprotkb/{uniprot_id}.fasta"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "af3.py/1.0"})
@@ -457,14 +462,16 @@ def fetch_uniprot(uniprot_id):
                       if not l.startswith(">")).strip()
         if not seq:
             die(f"UniProt '{uniprot_id}' 返回空序列")
-        with open(cache_file, "w") as f:
-            f.write(seq + "\n")
+        os.makedirs(UNIPROT_CACHE, exist_ok=True)
+        R.atomic_text(cache_file, seq + "\n")
         return seq
     except urllib.error.HTTPError as e:
         die(f"抓取 UniProt '{uniprot_id}' 失败:HTTP {e.code}",
             hint="若是配体请写成 l:ATP 形式;若是裸序列请检查是否拼写正确")
     except urllib.error.URLError as e:
-        die(f"抓取 UniProt '{uniprot_id}' 网络错误:{e}")
+        die(f"抓取 UniProt '{uniprot_id}' 网络错误:{e}",
+            hint=f"未找到可用的本地序列。将离线库 uniprot.sqlite3 放入 {UNIPROT_CACHE}，"
+                 "或在设置中指定共享 UniProt 序列目录；确认该 ID 在库的覆盖范围内。")
 
 
 # ============================================================================
@@ -574,8 +581,7 @@ def _looks_like_smiles(s):
 
 
 def _is_uniprot_id(s):
-    return bool(re.match(r"^[OPQ][0-9][A-Z0-9]{3}[0-9]$", s)) or \
-           bool(re.match(r"^[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}$", s))
+    return bool(re.fullmatch(r"(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-[1-9][0-9]*)?", s))
 
 
 def split_entities(expr):
@@ -662,7 +668,7 @@ def parse_entity(seg, fetch=True):
             copies = int(m2.group(2))
             if copies < 1:
                 die(f"拷贝数必须 >= 1(实体 '{seg}')")
-    is_smi = _looks_like_smiles(src)
+    is_smi = _looks_like_smiles(src) and not _is_uniprot_id(src.upper())
 
     ent["source"] = src
     ent["copies"] = copies

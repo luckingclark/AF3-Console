@@ -33,6 +33,8 @@ Real predictions require **Linux + Slurm**, a separately obtained AF3 container,
 
 Version **0.1.0 — pre-release**. [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227): **191 tests passed, 0 skipped**. See the [validation record](docs/validation.md) for checks performed and remaining gaps. Real Slurm/AF3 execution, a fresh Linux Conda installation, GPU capacity and cross-cluster compatibility still require deployment validation. This repository does not distribute AF3, weights, databases or research datasets.
 
+**Offline sequences:** an indexed UniProt library at `<application cache>/uniprot/uniprot.sqlite3` is used automatically before network access. Setup also supports a read-only shared sequence directory. See [offline setup](docs/usage.en.md#offline-uniprot-sequences-and-shared-libraries). The data bundle is separate from the application.
+
 ## Author, licensing and citation
 
 This project's code was developed through AI-assisted **vibe coding using Kimi-K3 and GPT-6**. Project author: **PKU-Gaolab, Ming-Ao Lu**. Report issues or propose focused changes after sanitizing logs and screenshots; development checks are documented in the [guide](docs/usage.en.md#development). 

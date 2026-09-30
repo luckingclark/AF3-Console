@@ -4,6 +4,7 @@
   "HOST_MODELS": "/path/to/your/model_parameters",
   "HOST_DB_SOURCE": "/path/to/your/public_databases",
   "MSA_BACKUP_DIRS": [],
+  "HOST_UNIPROT_SHARED": "",
   "MSA_PARTITION": "your_cpu_partition",
   "INF_PARTITION": "your_gpu_partition",
   "INF_FALLBACK_PARTITION": "",

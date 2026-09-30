@@ -34,6 +34,7 @@ win._set_lang('en')
 source = home/'shared template.json'
 personal = Path(B.personal_config_path())
 template = {'HOST_BASE': str(home/'template-work'), 'HOST_MODELS': str(home/'shared models'),
+            'HOST_UNIPROT_SHARED': str(home/'shared sequences'),
             'MSA_PARTITION': 'example_cpu', 'INF_PARTITION': 'example_gpu',
             'MSA_NTASKS_SINGLE': 7, 'MSA_NTASKS_BATCH': 3, 'INF_UM_TOKEN': 4096,
             'INF_BUCKETS': '256,512,1024', 'WATCHER_POLL_SEC': 43,
@@ -65,6 +66,7 @@ def import_file():
             assert not win.setup_edits['HOST_BASE'].isReadOnly()
             assert len(win.setup_msa_backup_edits) == 2
             assert win.setup_derived['HOST_MODELS'].text() == template['HOST_MODELS']
+            assert win.setup_derived['HOST_UNIPROT_SHARED'].text() == template['HOST_UNIPROT_SHARED']
             win.setup_edits['HOST_BASE'].setText(str(home/'my work'))
             win.setup_edits['MSA_MAX_CONCURRENT'].setText('2')
             assert win.setup_derived['HOST_OUTPUT'].text() == str(home/'my work'/'output')
@@ -91,7 +93,7 @@ def import_file():
             child = subprocess.run([sys.executable, '-B', '-c', 'import af3,json; print(json.dumps(af3.config_snapshot()))'],
                                    capture_output=True, encoding='utf-8', check=True, env=dict(os.environ))
             saved = json.loads(child.stdout)
-            for key in ('MSA_NTASKS_SINGLE', 'MSA_NTASKS_BATCH', 'INF_UM_TOKEN', 'INF_BUCKETS', 'WATCHER_POLL_SEC', 'MSA_BACKUP_DIRS'):
+            for key in ('MSA_NTASKS_SINGLE', 'MSA_NTASKS_BATCH', 'INF_UM_TOKEN', 'INF_BUCKETS', 'WATCHER_POLL_SEC', 'MSA_BACKUP_DIRS', 'HOST_UNIPROT_SHARED'):
                 assert saved[key] == template[key], key
             assert saved['HOST_BASE'] == str(home/'my work')
             assert saved['MSA_MAX_CONCURRENT'] == 2

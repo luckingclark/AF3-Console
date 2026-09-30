@@ -61,6 +61,7 @@
     "merge_gui.py",
     "packaging/audit_release.py",
     "packaging/build_release.py",
+    "packaging/build_uniprot_library.py",
     "packaging/build_workflow_diagram.py",
     "packaging/capture_previews.py",
     "packaging/release_files.json",
@@ -82,6 +83,7 @@
     "tests/test_pae_release.py",
     "tests/test_public_ui.py",
     "tests/test_release.py",
+    "tests/test_uniprot_offline.py",
     "tests/test_workflow.py"
   ],
   "runtime": [

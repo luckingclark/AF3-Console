@@ -10,6 +10,7 @@ import os
 import re
 import shutil
 import shlex
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -25,6 +26,69 @@ TERMINAL = {"succeeded", "failed", "cancelled", "blocked"}
 
 class BusinessError(ValueError):
     """Invalid user input; CLI translates this to a nonzero exit code."""
+
+
+UNIPROT_INDEX_NAME = 'uniprot.sqlite3'
+UNIPROT_INDEX_FORMAT = 'af3-console-uniprot-v1'
+
+
+def lookup_uniprot_index(path, accession):
+    """Exact indexed lookup, including unambiguous secondary accessions.
+
+    Open read-only: shared libraries never need write permission and a missing
+    path never creates an empty database. Connections stay local to each call.
+    """
+    path = Path(path)
+    uri = path.resolve().as_uri() + '?mode=ro'
+    try:
+        with contextlib.closing(sqlite3.connect(uri, uri=True, timeout=5)) as db:
+            db.execute('PRAGMA query_only=ON')
+            db.execute('PRAGMA trusted_schema=OFF')
+            if db.execute("SELECT value FROM metadata WHERE key='format'").fetchone() != (UNIPROT_INDEX_FORMAT,):
+                raise ValueError('Unsupported UniProt offline index format')
+            row = db.execute('SELECT sequence FROM sequences WHERE accession=?', (accession,)).fetchone()
+            if row is None:
+                row = db.execute('''SELECT sequence FROM sequences JOIN aliases
+                    ON sequences.accession=aliases.accession WHERE aliases.alias=?''', (accession,)).fetchone()
+            if row is None:
+                return None
+            if not isinstance(row[0], str) or not re.fullmatch('[A-Z]+', row[0]):
+                raise ValueError('Invalid sequence in UniProt offline index')
+            return row[0]
+    except sqlite3.Error as exc:
+        raise ValueError('Cannot read UniProt offline index: ' + str(exc)) from exc
+
+
+def cached_uniprot_sequence(accession, personal_dir, shared_dir='', on_warning=None):
+    """Personal .seq/index, then shared .seq/index; no writes or network I/O."""
+    if not re.fullmatch(r'[A-Z0-9][A-Z0-9_-]{0,63}', accession):
+        raise ValueError('Invalid UniProt accession')
+    seen = set()
+    for directory in (personal_dir, shared_dir):
+        if not directory:
+            continue
+        folder = Path(directory)
+        identity = os.path.normcase(os.path.realpath(folder))
+        if identity in seen:
+            continue
+        seen.add(identity)
+        for path, kind in ((folder / (accession + '.seq'), 'sequence'),
+                           (folder / UNIPROT_INDEX_NAME, 'index')):
+            try:
+                if not path.exists():
+                    continue
+                if kind == 'index':
+                    sequence = lookup_uniprot_index(path, accession)
+                else:
+                    sequence = path.read_text(encoding='utf-8').strip().upper()
+                    if not re.fullmatch('[A-Z]+', sequence):
+                        raise ValueError('Empty or invalid sequence cache')
+                if sequence:
+                    return sequence
+            except (OSError, ValueError) as exc:
+                if on_warning:
+                    on_warning(str(path) + ': ' + str(exc))
+    return None
 
 
 _GUI_COMMAND_MARKER = '# AF3 Console launcher; managed by af3.py install-gui'

@@ -2105,6 +2105,7 @@ EDITABLE_CONFIG = {
     "MSA_BACKUP_DIRS": ("paths", "最多两个只新增的 MSA 备份目录"),
     "HOST_MODELS": ("str", "AF3 模型权重目录(默认 HOST_BASE/models)"),
     "HOST_CACHE": ("str", "缓存目录(默认 HOST_BASE/cache)"),
+    "HOST_UNIPROT_SHARED": ("str", "可选的只读共享 UniProt 序列目录"),
     "HOST_JAX_CACHE": ("str", "JAX 编译缓存目录(默认 HOST_BASE/af3_buckets_cache)"),
 }
 
