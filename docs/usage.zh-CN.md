@@ -92,15 +92,68 @@ SSD 缓存和备用 GPU 分区默认关闭。设置保存到用户 JSON，不修
 
 ### UniProt 离线序列与共享序列库
 
-集群不能访问 UniProt 时，将准备好的 **`uniprot.sqlite3`** 索引直接放入 **“应用缓存目录”下的 `uniprot/` 文件夹**。默认位置是 `~/AF3/cache/uniprot/uniprot.sqlite3`。将 `manifest.json` 来源清单和数据许可说明放在旁边。程序会自动识别，无需安装数据库服务、额外 Python 包或拆分序列文件；已有 `.seq` 文件继续保留。旧版程序需先更新程序目录中的 `af3.py`、`af3_runtime.py` 和 `af3_gui`，才能读取该索引。
+如果抓取 UniProt 序列时出现 `Name or service not known`、`Could not resolve host` 或 `Resolving timed out`，该错误指向网络／DNS 问题，本身不代表共享目录权限不足。集群无法连接 `rest.uniprot.org` 时，可安装本离线库，从本地解析已收录的 ID；也可用于减少重复联网下载序列。它不会修复集群网络，也不能提供其他在线服务。
 
-若要共用同事的序列库，在设置页的 **“共享 UniProt 序列目录（可选，只读）”** 填写直接包含 `uniprot.sqlite3` 或 `ID.seq` 的文件夹，然后保存用户配置。每次依次查询个人 `.seq`、个人索引、共享 `.seq`、共享索引，全部未命中才访问 UniProt。程序只读共享文件及索引，不同步、不覆盖、不删除；联网获得的序列只写入个人 `.seq`。已有个人序列优先于新版离线库，以保留原先使用的输入序列。
+**在能联网的电脑上下载：**[修正版四物种离线库 ZIP](https://github.com/luckingclark/AF3-Console/releases/download/uniprot-4species-20260930-isoform-fix/AF3_UniProt_4species_20260930_isoform_fix.zip) 和 [SHA-256 校验文件](https://github.com/luckingclark/AF3-Console/releases/download/uniprot-4species-20260930-isoform-fix/AF3_UniProt_4species_20260930_isoform_fix.zip.sha256)，也可以从[数据包发布页](https://github.com/luckingclark/AF3-Console/releases/tag/uniprot-4species-20260930-isoform-fix)进入。通过 SFTP 等工具将两个文件传到集群。请选择发布页附件中上述名称的 ZIP；GitHub 自动生成的 **Source code** 是程序源码包，不包含离线序列库。离线库为可选附件，与常规仓库下载分开提供。
 
-Run、Pulldown 和两种 Scan 模式共用此查询流程。输入索引覆盖的 ID 后，**“解析输入”** 可以在断网时成功，且不会额外生成 `.seq` 文件。若库中存在对应异构体，也支持 `P12345-2` 一类异构体 ID；此 ID 仅为语法占位符，不能用于验证真实下载库。实际检查请选择库内的真实 ID。
+本库来自 **UniProt 2026_03**，下载日期为 **2026-09-30**。ZIP 约 **58 MB**，解压后的库约需 **210 MB** 空间；备份旧库需另外预留空间。
 
-准备的模式生物库覆盖大肠杆菌 K-12 MG1655、人、小鼠及酿酒酵母 S288C 的指定参考蛋白质组，包含 UniProt 导出的默认序列和额外异构体序列。来源清单记录版本、下载地址、数量及校验值。它**不覆盖全部菌株、变体、旧 ID 或次级 ID**；未收录的 ID 仍需要补充本地序列或联网。序列库不能替代 MSA 产物或 AF3 的搜索数据库。UniProt 下载数据保留其 [CC BY 4.0 署名条款](https://www.uniprot.org/help/license)，与程序源码分开提供。
+| 参考蛋白质组 | 默认序列条目 | 额外异构体序列 | 序列总数 |
+|---|---:|---:|---:|
+| 大肠杆菌 K-12 MG1655（`UP000000625`） | 4,403 | 12 | 4,415 |
+| 人（`UP000005640`） | 147,520 | 22,131 | 169,651 |
+| 小鼠（`UP000000589`） | 54,855 | 8,473 | 63,328 |
+| 酿酒酵母 S288C（`UP000002311`） | 6,067 | 31 | 6,098 |
+| **合计** | **212,845** | **30,647** | **243,492** |
 
-需要重新下载和建库时，`source` 分支提供 `packaging/build_uniprot_library.py --download-dir /path/to/your/downloads --output-dir /path/to/your/new_library`，在能联网的电脑上用 Python 运行。脚本保留已校验分页以便重试，核对统一版本及默认序列长度，拒绝覆盖已有索引；完成后再传到集群。下载新 UniProt 版本时请使用新的下载目录。
+数量指 UniProt 序列条目，并非基因数；包含 reviewed 和 unreviewed 条目。修正版新增 **15,904 条官方 canonical isoform 编号映射**，原有序列保持不变。UniProt 有时只用不带后缀的主编号导出 canonical 序列；本库依据官方 `ALTERNATIVE PRODUCTS` 注释中状态为 `Displayed` 的编号补齐其完整 isoform ID。canonical **不一定是 `-1`**，程序不会猜测并去掉后缀。5 个有歧义的历史 isoform 编号未加入映射，详情记录在来源清单中。本库不覆盖所有菌株、变体、次级或历史编号。
+
+#### 安装或替换离线库
+
+程序需为 **2026-09-30 离线库更新版或后续版本**。如果已经安装，该修复**只需更新数据**，不用重装 GUI、Conda 或全局启动命令。更旧的程序需先从当前部署版一起更新 `af3.py`、`af3_runtime.py`、`af3_gui`，或使用新下载的完整 `AF3_Console/` 文件夹。
+
+1. 关闭 GUI，确保其他程序也没有读取待替换的索引。共享库更新时先与使用者协调。
+2. 在上传的 ZIP 及其 `.sha256` 文件所在目录检查压缩包：
+
+   ```bash
+   sha256sum -c AF3_UniProt_4species_20260930_isoform_fix.zip.sha256
+   ```
+
+   文件名后显示 `OK` 即通过；失败时先重新传输，不要继续安装。
+3. 解压到临时目录。ZIP 已包含 `uniprot/` 这一层；进入解压出的该文件夹校验内容：
+
+   ```bash
+   cd /path/to/your/extracted/uniprot
+   sha256sum -c SHA256SUMS
+   ```
+
+   所有列出的文件应显示 `OK`。
+4. 若已有旧库，先将 `uniprot.sqlite3` 及配套说明备份到当前库目录以外。传输与校验结束后，将解压的 `uniprot/` 合并到**设置 → 应用缓存目录**，替换索引及随附说明，**保留所有已有 `.seq` 文件**。不要删除缓存目录，也不要多嵌套一层 `uniprot/`。
+
+   使用默认应用缓存时，最终结构为：
+
+   ```text
+   ~/AF3/cache/uniprot/
+   ├── uniprot.sqlite3
+   ├── manifest.json
+   ├── NOTICE.txt
+   ├── README.zh-CN.md
+   ├── SHA256SUMS
+   └── 原有的 .seq 文件（若有）
+   ```
+
+   自定义缓存对应 `<应用缓存目录>/uniprot/uniprot.sqlite3`。来源清单和许可说明须与数据库放在一起；程序直接读取 SQLite 索引，不需要数据库服务、额外 Python 依赖或生成大量小文件。
+5. 重新打开 GUI，输入库内实际收录的 ID，点击**解析输入**。能显示序列及长度，且不再报 UniProt 抓取错误，即为成功；此操作不会提交预测。文档中的 `P12345`、`Q12345`、`P12345-2` 只是语法占位符，不保证适合验证实际库。索引命中不会另外生成 `.seq` 文件。
+
+#### 实验室共享一份库
+
+在**共享 UniProt 序列目录（可选，只读）**中填写直接包含 `uniprot.sqlite3` 的文件夹，例如 `/path/to/your/shared/uniprot`，然后保存用户配置。各人的**应用缓存目录**继续指向自己的目录。共享文件需要可读，各级父目录需要可进入；不要求写权限。下次打开 GUI 会继续使用已保存设置。
+
+Run、Pulldown 和两种 Scan 模式都按**个人 `.seq` → 个人索引 → 共享 `.seq` → 共享索引 → 在线 UniProt**查询。GUI 不同步、不覆盖、不删除共享库；两个索引都以只读方式打开。联网获取的序列只写入个人 `.seq`，已有个人序列优先于新索引。未收录的编号仍需另行准备序列或恢复网络；此包不是整个 UniProt。校验失败、文件不可读或目录多嵌套一层，均需先修正才能正常离线读取。
+
+本库只用于**根据编号查询序列**，不含 MSA 结果、AF3 搜索数据库或模型权重。数据来源为 **The UniProt Consortium**，采用 [CC BY 4.0](https://www.uniprot.org/help/license)，与程序的 MIT 许可独立；转交他人时保留 `NOTICE.txt` 和 `manifest.json`。
+
+**重新建库说明：** 当前 `source` 分支的 `packaging/build_uniprot_library.py` 可以构建基础 FASTA 索引，但尚未加入本次发布所含的官方 canonical isoform 映射处理，其产物不等同于此修正版。需要这些映射时请使用本次发布的 ZIP。
 
 ### “资源上限”的硬件配置参考
 

@@ -100,6 +100,12 @@ Keep the application folder in place. If you move it, run `python -B af3.py inst
 
 Success at this stage means the main window opens and **Settings** and **Help → About** are accessible. AF3 resources can be configured afterward. If the display cannot open, check X11 forwarding; see [troubleshooting](docs/usage.en.md#troubleshooting).
 
+## Offline sequence library for clusters without UniProt access
+
+If sequence retrieval reports `Name or service not known` or `Resolving timed out`, install the optional [four-species offline library](https://github.com/luckingclark/AF3-Console/releases/tag/uniprot-4species-20260930-isoform-fix) using an internet-connected computer to download and transfer it. The corrected ZIP is about **58 MB**: **243,492 sequences** from E. coli K-12 MG1655, human, mouse and S. cerevisiae S288C, plus **15,904 official canonical isoform mappings** (UniProt **2026_03**).
+
+Place its `uniprot/` folder under **Application cache** (default index: `~/AF3/cache/uniprot/uniprot.sqlite3`), preserving existing `.seq` files. A lab can share one read-only copy through Settings. Existing offline-capable installations need only the corrected data, with no Conda reinstall. See [installation, checksum verification, sharing and success checks](docs/usage.en.md#offline-uniprot-sequences-and-shared-libraries). This optional download is separate from the repository ZIP; it does not contain MSA results, AF3 search databases or weights. UniProt data retain **CC BY 4.0** attribution terms.
+
 ## Configure and make your first prediction
 
 1. If you have a configuration JSON, choose **Import configuration JSON** in **Settings**, then adjust it for your account. Otherwise, enter the settings manually. Set the work directory (default `~/AF3`), AF3 container file, model-parameter directory, database directory, and your CPU/GPU partitions. Use actual cluster paths, not `/path/to/your/...` placeholders. [config.example.json](AF3_Console/config.example.json) describes the configuration fields; it is not a working cluster configuration.
@@ -129,8 +135,6 @@ Paths below use the default work directory. Configuration can change them; the s
 | `iptm_profile.csv`, `report.md` | Additional Scan summaries for reviewing scores along the original sequence coordinates. |
 
 Missing results, failed tasks or a partial ranking are not a completed screen. See [results and upgrades](docs/usage.en.md#results-and-upgrades) for retrieval and follow-up commands.
-
-**Offline sequences:** an indexed UniProt library at `<application cache>/uniprot/uniprot.sqlite3` is used automatically before network access. Setup also supports a read-only shared sequence directory. See [offline setup](docs/usage.en.md#offline-uniprot-sequences-and-shared-libraries). The data bundle is separate from the application.
 
 ## Author, licensing and citation
 

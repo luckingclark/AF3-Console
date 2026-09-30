@@ -100,6 +100,12 @@ af3_gui
 
 此阶段的成功标志是主窗口打开，能够访问**设置**及**帮助 → 关于**；AF3 资源可以随后填写。若无法打开图形显示，请检查 X11 转发，参见[使用指南](usage.zh-CN.md)。
 
+## 集群无法连接 UniProt 时使用离线序列库
+
+抓取序列时若出现 `Name or service not known` 或 `Resolving timed out`，可在能联网的电脑上下载[四物种离线序列库](https://github.com/luckingclark/AF3-Console/releases/tag/uniprot-4species-20260930-isoform-fix)并传到集群。修正版 ZIP 约 **58 MB**，包含大肠杆菌 K-12 MG1655、人、小鼠、酿酒酵母 S288C 共 **243,492 条序列**，以及 **15,904 条官方 canonical isoform 映射**，数据版本为 UniProt **2026_03**。
+
+将包内的 `uniprot/` 放到**应用缓存目录**下，默认索引位置是 `~/AF3/cache/uniprot/uniprot.sqlite3`，保留已有 `.seq` 文件。实验室可在设置页指定一份只读共享库；已支持离线库的程序只需更新数据，不用重装 Conda。详见[安装、校验、共享与成功标志](usage.zh-CN.md#uniprot-离线序列与共享序列库)。数据包为可选下载，与仓库 ZIP 分开提供，不包含 MSA 结果、AF3 搜索数据库或权重；UniProt 数据保留 **CC BY 4.0** 署名条款。
+
 ## 配置并完成第一次预测
 
 1. 已有配置 JSON 时，在**设置**中点击**导入配置 JSON**，再按自己的账号修改；也可手动填写。设置工作目录（默认 `~/AF3`）、AF3 容器文件、模型参数目录、数据库目录，以及实际可用的 CPU／GPU 分区。使用真实集群路径，不要保留 `/path/to/your/...` 占位符。[config.example.json](../AF3_Console/config.example.json)用于说明字段，并非可直接提交作业的集群配置。
@@ -129,8 +135,6 @@ af3_gui
 | `iptm_profile.csv`、`report.md` | Scan 的附加汇总，用于沿原始序列坐标查看分数。 |
 
 缺少结果、存在失败任务或仅有部分排名，都不能视为整批筛选完成。结果获取和后续操作见[结果与升级说明](usage.zh-CN.md#结果升级与故障处理)。
-
-**离线序列：** 将 UniProt 索引放在“应用缓存目录”下的 `uniprot/uniprot.sqlite3`，程序会在联网前自动读取；设置页也支持只读共享序列目录。操作见[离线配置](usage.zh-CN.md#uniprot-离线序列与共享序列库)。数据包与程序分开提供。
 
 ## 作者、许可与引用
 

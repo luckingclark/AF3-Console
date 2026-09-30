@@ -83,15 +83,68 @@ Replace every `your_...` and `/path/to/your/...` placeholder. This template is i
 
 ### Offline UniProt sequences and shared libraries
 
-For clusters without UniProt access, place the prepared **`uniprot.sqlite3`** index directly in **`<application cache>/uniprot/`**. With the default workspace, this is `~/AF3/cache/uniprot/uniprot.sqlite3`. Keep its `manifest.json` and data license notice beside it. The index is detected automatically; no database server, extra Python package or per-sequence extraction is needed. Preserve existing `.seq` files. Older program versions require the updated `af3.py`, `af3_runtime.py` and `af3_gui` in the application directory before they can use the index.
+If UniProt sequence retrieval fails with `Name or service not known`, `Could not resolve host` or `Resolving timed out`, the reported failure is a network/DNS problem. It does not by itself indicate a shared-directory permission problem. When the cluster cannot reach `rest.uniprot.org`, install this optional library to resolve covered IDs locally. It also avoids repeated online sequence downloads. It does not repair the cluster network or provide other online services.
 
-To share a colleague's library, set **Shared UniProt sequences (optional, read-only)** in Setup to the folder directly containing `uniprot.sqlite3` or existing `ID.seq` files, then save user settings. Each lookup checks personal `.seq` files, the personal index, shared `.seq` files and the shared index, in that order, before trying UniProt online. All shared files and both indexes are read-only to the application; no synchronization, overwriting or deletion occurs. Online downloads are saved only to personal `.seq` files. Existing personal sequences take precedence over a newer library, preserving the previous input sequence.
+**Download on an internet-connected computer:** [corrected four-species library ZIP](https://github.com/luckingclark/AF3-Console/releases/download/uniprot-4species-20260930-isoform-fix/AF3_UniProt_4species_20260930_isoform_fix.zip) and its [SHA-256 file](https://github.com/luckingclark/AF3-Console/releases/download/uniprot-4species-20260930-isoform-fix/AF3_UniProt_4species_20260930_isoform_fix.zip.sha256), also available on the [data release page](https://github.com/luckingclark/AF3-Console/releases/tag/uniprot-4species-20260930-isoform-fix). Transfer both files to the cluster with SFTP or your usual file-transfer tool. Under Release assets, choose the named library ZIP; GitHub's automatic **Source code** archives contain the application, not this sequence library. The library is optional and separate from the normal repository download.
 
-Run, Pulldown and both Scan modes use the same lookup. A successful **Parse input** for an ID covered by the index works without network access and does not create another `.seq` file. An optional isoform suffix such as `P12345-2` is supported when that exact accession is in the library; this ID is only a syntax placeholder, not an offline demonstration entry. Choose an actual ID covered by your downloaded library for a real check.
+This snapshot uses **UniProt 2026_03**, downloaded on **2026-09-30**. The ZIP is about **58 MB**, with about **210 MB** needed for the extracted library; allow additional space for backups.
 
-The prepared model-organism library covers the selected reference proteomes for E. coli K-12 MG1655, human, mouse and S. cerevisiae S288C, including canonical sequences and additional isoforms exported by UniProt. Its manifest records the release, download URLs, counts and hashes. It does **not** cover all strains, variants, secondary or historical IDs; a missing ID still needs another local sequence or an online request. Sequences do not replace MSA products or the AF3 search databases. Downloaded UniProt data retain their [CC BY 4.0 attribution terms](https://www.uniprot.org/help/license) and are distributed separately from application source.
+| Reference proteome | Canonical entries | Additional isoform sequences | Total sequences |
+|---|---:|---:|---:|
+| E. coli K-12 MG1655 (`UP000000625`) | 4,403 | 12 | 4,415 |
+| Human (`UP000005640`) | 147,520 | 22,131 | 169,651 |
+| Mouse (`UP000000589`) | 54,855 | 8,473 | 63,328 |
+| S. cerevisiae S288C (`UP000002311`) | 6,067 | 31 | 6,098 |
+| **Total** | **212,845** | **30,647** | **243,492** |
 
-For a reproducible download and index build, the `source` branch provides `packaging/build_uniprot_library.py --download-dir /path/to/your/downloads --output-dir /path/to/your/new_library`. Run it with Python on an internet-connected computer. It preserves verified pages for retries, verifies a single release and canonical sequence lengths, and refuses to replace an existing index. Transfer the completed index and manifest to the cluster. Use a new download directory for a new UniProt release.
+Counts are UniProt sequence entries, not genes; reviewed and unreviewed entries are included. The corrected index adds **15,904 official canonical isoform aliases**, while all original sequence strings remain unchanged. UniProt may export a canonical sequence under its unsuffixed accession only. Official `ALTERNATIVE PRODUCTS` annotations with sequence status `Displayed` supply its explicit isoform ID. Canonical does **not** always mean `-1`; this library never strips that suffix by guesswork. Five ambiguous historical isoform IDs were omitted and recorded in the manifest. Coverage does not include every strain, variant, secondary or historical accession.
+
+#### Install or replace the library
+
+Use the AF3 Console offline-library update dated **2026-09-30** or later. If already installed, this is a **data-only update**: no GUI, Conda or global-command reinstall is needed. Older installations must first update `af3.py`, `af3_runtime.py` and `af3_gui` together from the current deployment edition, or use a fresh complete `AF3_Console/` folder.
+
+1. Close the GUI and ensure no other process is reading the index being replaced. For a shared library, coordinate the replacement with its users.
+2. In the folder containing the transferred ZIP and its `.sha256` file, verify the archive:
+
+   ```bash
+   sha256sum -c AF3_UniProt_4species_20260930_isoform_fix.zip.sha256
+   ```
+
+   Success is the archive filename followed by `OK`. If verification fails, transfer the file again before installing it.
+3. Extract into a temporary folder. The ZIP already contains `uniprot/`. Inside that extracted folder, verify its contents:
+
+   ```bash
+   cd /path/to/your/extracted/uniprot
+   sha256sum -c SHA256SUMS
+   ```
+
+   All listed files should report `OK`.
+4. Back up any existing `uniprot.sqlite3` and accompanying metadata outside the active library folder. Merge the extracted `uniprot/` into **Settings → Application cache** only after transfer and verification have finished. Replace the index and bundled metadata, **preserving every existing `.seq` file**. Do not delete the cache folder or extract another `uniprot/` inside it.
+
+   With the default application cache, the final layout is:
+
+   ```text
+   ~/AF3/cache/uniprot/
+   ├── uniprot.sqlite3
+   ├── manifest.json
+   ├── NOTICE.txt
+   ├── README.zh-CN.md
+   ├── SHA256SUMS
+   └── existing .seq files, if any
+   ```
+
+   A custom application cache uses `<application cache>/uniprot/uniprot.sqlite3`. Keep the manifest and notice beside the database. The application reads the SQLite index directly without a database service, additional Python dependencies or thousands of new small files.
+5. Reopen the GUI, enter an actual ID covered by the library, and choose **Parse input**. Seeing its sequence and length without a UniProt retrieval error is the success check; it does not submit a prediction. `P12345`, `Q12345` and `P12345-2` in this guide are syntax placeholders, not guaranteed library test entries. An index hit does not create another `.seq` file.
+
+#### Share one copy within a lab
+
+In **Shared UniProt sequences (optional, read-only)**, enter the directory directly containing `uniprot.sqlite3`, for example `/path/to/your/shared/uniprot`, then save user settings. Keep each user's **Application cache** pointing to their own directory. Shared files must be readable and all parent directories traversable; users need no write permission. Saved settings are reused on later launches.
+
+Run, Pulldown and both Scan modes query **personal `.seq` → personal index → shared `.seq` → shared index → online UniProt**. The application does not synchronize, overwrite or delete the shared library; both indexes are read-only. Online downloads go only to personal `.seq` files. Existing personal sequences take precedence over a newer index. If an ID is absent, prepare its sequence separately or restore network access; the package is not all of UniProt. A checksum failure, unreadable file or incorrect directory nesting must be corrected before offline lookup can work.
+
+This is a **sequence lookup library**, not MSA results, AF3 search databases or model weights. Data are attributed to **The UniProt Consortium** under [CC BY 4.0](https://www.uniprot.org/help/license), independently of the application's MIT license. Retain `NOTICE.txt` and `manifest.json` when sharing it.
+
+**Rebuilding:** the current `source`-branch `packaging/build_uniprot_library.py` builds the base FASTA index but does not yet add the official canonical isoform aliases included in this release. Its output is not equivalent to this corrected package. Use the released ZIP when you need these mappings.
 
 ### Hardware reference for Resource limits
 
