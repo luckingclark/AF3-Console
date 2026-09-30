@@ -81,6 +81,18 @@ Replace every `your_...` and `/path/to/your/...` placeholder. This template is i
 
 **MSA pools and backups:** use **＋** beside the MSA path to configure 1–3 independent directories. Completed new products are copied to the backups; a startup check asks before synchronizing existing additions between pools. Conflicting products remain untouched, with no overwrite or deletion. Before reuse, incomplete data is rejected and valid empty `unpairedMsa`, `pairedMsa` or `templates` prompts a reuse/recompute/cancel decision. See [MSA backup, synchronization and empty-field handling](#msa-pools).
 
+### Offline UniProt sequences and shared libraries
+
+For clusters without UniProt access, place the prepared **`uniprot.sqlite3`** index directly in **`<application cache>/uniprot/`**. With the default workspace, this is `~/AF3/cache/uniprot/uniprot.sqlite3`. Keep its `manifest.json` and data license notice beside it. The index is detected automatically; no database server, extra Python package or per-sequence extraction is needed. Preserve existing `.seq` files. Older program versions require the updated `af3.py`, `af3_runtime.py` and `af3_gui` in the application directory before they can use the index.
+
+To share a colleague's library, set **Shared UniProt sequences (optional, read-only)** in Setup to the folder directly containing `uniprot.sqlite3` or existing `ID.seq` files, then save user settings. Each lookup checks personal `.seq` files, the personal index, shared `.seq` files and the shared index, in that order, before trying UniProt online. All shared files and both indexes are read-only to the application; no synchronization, overwriting or deletion occurs. Online downloads are saved only to personal `.seq` files. Existing personal sequences take precedence over a newer library, preserving the previous input sequence.
+
+Run, Pulldown and both Scan modes use the same lookup. A successful **Parse input** for an ID covered by the index works without network access and does not create another `.seq` file. An optional isoform suffix such as `P12345-2` is supported when that exact accession is in the library; this ID is only a syntax placeholder, not an offline demonstration entry. Choose an actual ID covered by your downloaded library for a real check.
+
+The prepared model-organism library covers the selected reference proteomes for E. coli K-12 MG1655, human, mouse and S. cerevisiae S288C, including canonical sequences and additional isoforms exported by UniProt. Its manifest records the release, download URLs, counts and hashes. It does **not** cover all strains, variants, secondary or historical IDs; a missing ID still needs another local sequence or an online request. Sequences do not replace MSA products or the AF3 search databases. Downloaded UniProt data retain their [CC BY 4.0 attribution terms](https://www.uniprot.org/help/license) and are distributed separately from application source.
+
+For a reproducible download and index build, the `source` branch provides `packaging/build_uniprot_library.py --download-dir /path/to/your/downloads --output-dir /path/to/your/new_library`. Run it with Python on an internet-connected computer. It preserves verified pages for retries, verifies a single release and canonical sequence lengths, and refuses to replace an existing index. Transfer the completed index and manifest to the cluster. Use a new download directory for a new UniProt release.
+
 ### Hardware reference for Resource limits
 
 These are the development environment's hardware specifications, supplied by the project author on **2026-09-14**, and its existing configuration. They do not constitute a new cluster validation of the public release. The CPU model was not supplied; only scheduler-reported topology and memory are listed. Account, node, partition and deployment-path identifiers are omitted.
@@ -301,3 +313,4 @@ MSA commands leave AF3's force-overwrite option disabled. If an external program
 Valid empty products may be backed up; synchronization consent does not grant inference reuse consent. Validation supports inline and external references, including gzip/xz/zstd alignments, and checks query sequences and template index consistency. It does not replace AF3's full structural parsing or establish biological quality.
 
 Readable GUI source, tests and build tools are in the [source branch](https://github.com/luckingclark/AF3-Console/tree/source). Third-party modules in the deployment directory remain editable and replaceable; retain their licenses.
+

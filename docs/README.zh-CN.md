@@ -130,6 +130,8 @@ af3_gui
 
 缺少结果、存在失败任务或仅有部分排名，都不能视为整批筛选完成。结果获取和后续操作见[结果与升级说明](usage.zh-CN.md#结果升级与故障处理)。
 
+**离线序列：** 将 UniProt 索引放在“应用缓存目录”下的 `uniprot/uniprot.sqlite3`，程序会在联网前自动读取；设置页也支持只读共享序列目录。操作见[离线配置](usage.zh-CN.md#uniprot-离线序列与共享序列库)。数据包与程序分开提供。
+
 ## 作者、许可与引用
 
 项目作者：**PKU-Gaolab, Ming-Ao Lu**。本项目代码利用 **Kimi-K3 和 GPT-6**，通过 AI 辅助的 **vibe coding** 方式完成。反馈问题前请先脱敏日志和截图；可读源码与开发检查位于 [source 分支](https://github.com/luckingclark/AF3-Console/tree/source)。

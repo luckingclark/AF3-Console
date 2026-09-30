@@ -130,6 +130,8 @@ Paths below use the default work directory. Configuration can change them; the s
 
 Missing results, failed tasks or a partial ranking are not a completed screen. See [results and upgrades](docs/usage.en.md#results-and-upgrades) for retrieval and follow-up commands.
 
+**Offline sequences:** an indexed UniProt library at `<application cache>/uniprot/uniprot.sqlite3` is used automatically before network access. Setup also supports a read-only shared sequence directory. See [offline setup](docs/usage.en.md#offline-uniprot-sequences-and-shared-libraries). The data bundle is separate from the application.
+
 ## Author, licensing and citation
 
 Project author: **PKU-Gaolab, Ming-Ao Lu**. This project's code was developed through AI-assisted **vibe coding using Kimi-K3 and GPT-6**. You can report issues after sanitizing logs and screenshots; readable source and development checks are on the [source branch](https://github.com/luckingclark/AF3-Console/tree/source).
