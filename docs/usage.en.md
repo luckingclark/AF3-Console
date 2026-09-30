@@ -8,7 +8,7 @@ For **0.1.0, deployment edition 2026-09-30**. Install the environment from the r
 
 You need access to a **Linux Slurm cluster**, an AlphaFold 3 **Singularity container**, its separately obtained **model parameters and databases**, and a Python environment visible to the compute nodes. The GUI uses **X11 forwarding**. AF3 Console supplies the UI and orchestration scripts; it does not include the prediction engine, GPU drivers, parameters, databases, or a Python environment.
 
-Desktop preview and synthetic tests can run without those cluster resources. Real prediction jobs require a working cluster deployment. This is an early release: the exact checks performed and untested deployment boundaries are listed in [validation](https://github.com/luckingclark/AF3-Console/blob/5ce05ca1dde5c019826775f57ad3edaa96e4d663/docs/validation.md).
+Desktop preview and synthetic tests can run without those cluster resources. Real prediction jobs require a working cluster deployment. This is an early release: the exact checks performed and untested deployment boundaries are listed in [validation](https://github.com/luckingclark/AF3-Console/blob/c5f1786441ed267a292efb9e37189947f3df20e6/docs/validation.md).
 
 ## Download and install
 
@@ -119,6 +119,8 @@ af3_gui
 ```
 
 MobaXterm users can enable its X server and X11 forwarding. In Setup, choose **Check resources**, correct the reported issues, and save. No X11 display is required for CLI help.
+
+In Settings, the import/save/copy/check buttons sit directly below the page title. Drag the divider between panels to adjust their relative sizes. Each page remembers your proportions automatically for the next launch, with separate values for horizontal and vertical layouts. These personal display preferences are separate from the AF3 configuration JSON; no Save button is needed.
 
 ## First preview and run
 
