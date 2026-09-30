@@ -21,7 +21,8 @@ Run 预测指定蛋白或复合物；Pulldown 筛选两组输入的组合；Scan
 ```bash
 conda env create -f environment.yml
 conda activate af3-console
-python -B af3_gui
+python -B install_command.py
+af3_gui
 ```
 
 实际预测需要 **Linux＋Slurm**、自行取得的 AF3 容器、模型参数、数据库和 GPU 分区；GUI 需要 **X11 转发**。[安装、配置、首次预览、提交、硬件参考和故障排查](docs/usage.zh-CN.md)从创建环境开始说明。公开 `config.example.json` 仅含占位符，真实配置请放在仓库外。
@@ -32,7 +33,7 @@ python -B af3_gui
 
 ## 作者、开发方式与来源
 
-本项目代码利用 **Kimi-K3 和 GPT-6**，通过 AI 辅助的 **vibe coding** 方式完成。项目作者：**PKU-Gaolab, Ming-Ao Lu**。可通过 Issues／Pull requests 反馈问题或提交修改，请先脱敏日志和截图；开发检查见[指南](docs/usage.zh-CN.md#开发与反馈)。作者署名不代表持续维护承诺。
+本项目代码利用 **Kimi-K3 和 GPT-6**，通过 AI 辅助的 **vibe coding** 方式完成。项目作者：**PKU-Gaolab, Ming-Ao Lu**。可通过 Issues／Pull requests 反馈问题或提交修改，请先脱敏日志和截图；开发检查见[指南](docs/usage.zh-CN.md#开发与反馈)。
 
 [功能对比](docs/comparison.zh-CN.md)只比较已有工具的能力与侧重点，不比较性能。PAE 建图改编自 LGPL 授权的 UCSF ChimeraX 特定实现，上游归功于 Tristan Croll／ISOLDE；聚类及映射队列改编自 NetworkX。具体来源与修改见[算法来源](docs/algorithm-provenance.md)及[第三方声明](THIRD_PARTY_NOTICES.md)。
 

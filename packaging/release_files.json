@@ -57,6 +57,7 @@
     "docs/validation.md",
     "environment.yml",
     "fonts/wqy-microhei.ttc",
+    "install_command.py",
     "merge_gui.py",
     "packaging/audit_release.py",
     "packaging/build_release.py",
@@ -67,6 +68,7 @@
     "requirements.txt",
     "tests/test_config_import_ui.py",
     "tests/test_config_release.py",
+    "tests/test_install_command.py",
     "tests/test_msa_job_names.py",
     "tests/test_msa_layout.py",
     "tests/test_msa_pool_integration.py",
@@ -128,6 +130,7 @@
     "docs/validation.md",
     "environment.yml",
     "fonts/wqy-microhei.ttc",
+    "install_command.py",
     "requirements.txt"
   ]
 }

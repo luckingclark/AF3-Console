@@ -1,6 +1,6 @@
 # AF3 Console
 
-[中文](README.zh-CN.md) · [Usage](docs/usage.en.md) · [Input formats](docs/inputs.en.md) · [Feature comparison](docs/comparison.md)
+[Chinese](README.zh-CN.md) · [Usage](docs/usage.en.md) · [Input formats](docs/inputs.en.md) · [Feature comparison](docs/comparison.md)
 
 Beyond AlphaFold 3–based batch interaction screening (Pulldown), AF3 Console introduces fragment scanning (Scan) for long proteins. Full-length predictions of very long sequences may fail to highlight local interaction signals; excluding candidates solely on a low overall ipTM score risks false negatives. Scan predicts fragments of a long protein against candidate partners and maps the results back to the original sequence coordinates. It aims to reduce missed interactions in full-length screening and locate regions for further investigation, informing truncation design and experimental validation.
 
@@ -21,7 +21,8 @@ Download **Code → Download ZIP** and unpack the software into a directory acce
 ```bash
 conda env create -f environment.yml
 conda activate af3-console
-python -B af3_gui
+python -B install_command.py
+af3_gui
 ```
 
 Real predictions require **Linux + Slurm**, a separately obtained AF3 container, model parameters and databases, and a configured GPU partition. The GUI needs **X11 forwarding**. Complete [installation, configuration, first preview, submission, hardware reference and troubleshooting](docs/usage.en.md) instructions start from environment creation. The public `config.example.json` contains placeholders; keep your real configuration outside the repository.
@@ -32,7 +33,7 @@ Version **0.1.0 — pre-release**. [Linux CI](https://github.com/luckingclark/AF
 
 ## Author, development and provenance
 
-This project's code was developed through AI-assisted **vibe coding using Kimi-K3 and GPT-6**. Project author: **PKU-Gaolab, Ming-Ao Lu**. Report issues or propose focused changes after sanitizing logs and screenshots; development checks are documented in the [guide](docs/usage.en.md#development). No commitment to ongoing maintenance is implied.
+This project's code was developed through AI-assisted **vibe coding using Kimi-K3 and GPT-6**. Project author: **PKU-Gaolab, Ming-Ao Lu**. Report issues or propose focused changes after sanitizing logs and screenshots; development checks are documented in the [guide](docs/usage.en.md#development). 
 
 The [feature comparison](docs/comparison.md) describes related tools by capabilities and focus, without ranking performance. PAE graph construction is adapted from the LGPL-licensed UCSF ChimeraX PAE implementation, which credits Tristan Croll/ISOLDE. Clustering and the mapped queue are adapted from NetworkX. See [algorithm provenance](docs/algorithm-provenance.md) and [third-party notices](THIRD_PARTY_NOTICES.md).
 

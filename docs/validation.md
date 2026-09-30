@@ -1,5 +1,9 @@
 # Validation / 验收记录
 
+## Environment launcher update — 2026-09-30
+
+`install_command.py` adds the environment-local `af3_gui` command. Five new tests cover environment selection, repeat installation, relocation, preservation of unrelated commands, failed-write recovery and actual POSIX execution from an unrelated directory using a venv Python. The local Windows run completed **200 tests: 198 passed, two skipped** (POSIX execution and platform-specific symlink permissions), with zero failures/errors. Linux CI exercises the POSIX launch and argument/path quoting. Real cluster execution remains untested. Earlier records below refer to the preceding builds.
+
 ## Configuration import update — 2026-09-30
 
 Setup now imports a configuration JSON for review and saves a personal default without selecting the template as its save destination. Existing personal settings are backed up before replacement. Tests cover fresh-process persistence, advanced parameters absent from the form, shared paths, invalid input, canceled selection and failed-write recovery. The local Windows/Python 3.12 run completed **195 tests: 194 passed, one platform-specific symlink test skipped, zero failures/errors**. Deployment/source equality, decoded GUI, privacy audit, fonts, bilingual About and offline licenses also passed. Real Slurm, AF3 and interactive cluster X11 execution were not performed for this update. Earlier records below describe the previous build.

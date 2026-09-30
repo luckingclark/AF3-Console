@@ -32,6 +32,7 @@
 conda env create -f environment.yml
 conda activate af3-console
 python -B af3.py --version
+python -B install_command.py
 ```
 
 也可以使用系统支持的 Python 3.12：
@@ -40,9 +41,14 @@ python -B af3.py --version
 python -m venv /path/to/your/af3-console-env
 source /path/to/your/af3-console-env/bin/activate
 python -m pip install -r requirements.txt
+python -B install_command.py
 ```
 
 集群优先采用 Conda。仓库声明依赖范围，不分发开发者完整环境或私人软件源地址；实际验证的依赖版本记录在验收文档中。
+
+安装脚本会将 `af3_gui` 注册到当前 Conda 环境（或 venv）。在包含 `af3_gui` 的程序目录运行一次即可；以后激活该环境，就能在任意目录输入 `af3_gui`。启动时保留当前目录，并使用该环境的 Python；无需修改 `.bashrc`，也不需要管理员权限。同名的其他程序不会被覆盖。
+
+搬动或升级程序后，在新程序目录重新执行 `python -B install_command.py` 更新命令。程序目录和环境仍需对计算节点可见；尚有排队或运行作业引用旧安装时，不要删除旧目录。若 Bash 缓存了旧命令，可执行 `hash -r`；`command -v af3_gui` 应显示当前环境下的 `bin/af3_gui`。
 
 ## 配置资源
 
@@ -113,12 +119,14 @@ SSD 缓存和备用 GPU 分区默认关闭。设置保存到用户 JSON，不修
 ssh -X your_username@your_login_host
 conda activate af3-console
 cd /path/to/your/af3-console
-python -B af3_gui
+af3_gui
 ```
 
 在“设置”页检查资源、修正问题并保存。纯命令行帮助不要求 X11。
 
 ## 第一次预览与提交
+
+`af3_gui` 可在任意目录启动；下方 `python -B af3.py ...` 命令行示例仍需在包含 `af3.py` 的程序目录执行。
 
 下面所有 `P12345`、`Q12345` 都是**语法占位符**，没有指定生物学对象，也不保证长度或突变位点有效。正式使用前替换为自己的输入：
 
@@ -149,6 +157,21 @@ python -B af3.py retry --spec /path/to/your/batch/spec.json
 图示为完整预测流程。PAE 模式缺少所需的全长单体 PAE 时，会先补算单体预测；阶段选择与 MSA 策略详见 UI 帮助。
 
 ## 结果、升级与故障处理
+
+### 从最初的 GitHub 版本升级到当前启动方式
+
+已核对最初 GitHub 源码快照 `03c29106fd23b20928c9591b35b22b2508c9adfd`：六个计算／运行支持模块和字体与当前版本一致。本次只需从最新 main 的 `AF3_Console/` 中取得：
+
+| 文件 | 操作与用途 |
+|---|---|
+| `af3_gui` | 替换旧文件，获得设置页导入配置等界面更新。 |
+| `install_command.py` | 新增文件，用于安装环境内的 `af3_gui` 命令。 |
+
+将这两个文件放到现有 `af3.py` 所在的同一目录。最初仓库版本的脚本可能在解压根目录，不必为了升级强制搬动已有目录。关闭旧 GUI，保留旧 `af3_gui` 副本后再替换；不要删除配置、任务快照、MSA、模型、数据库或许可证。
+
+在该程序目录激活原来的 `af3-console` 环境，运行一次 `python -B install_command.py`；此后从任意目录执行 `af3_gui`。依赖声明没有变化，已有可用环境无需重建。只想更新说明时，可另外查看新版 README 和本指南。
+
+此两文件更新适用于**最初上传 GitHub 的版本**。如果手上是更早的 **9 月 12 日五文件 ZIP**，请下载完整 main，因为它缺少目前所需的独立模块及许可证。
 
 默认批次输出在 `~/AF3/output/`，共享 MSA 池在 `~/AF3/msa_data/`，全长推理池在 `~/AF3/infer_data/`。结果保存在集群；复制界面显示的目录后，用 SFTP 下载。关闭窗口不会取消已提交的 Slurm 作业。
 
