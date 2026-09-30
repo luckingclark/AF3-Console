@@ -69,6 +69,7 @@
     "tests/test_config_import_ui.py",
     "tests/test_config_release.py",
     "tests/test_install_command.py",
+    "tests/test_layout_preferences.py",
     "tests/test_msa_job_names.py",
     "tests/test_msa_layout.py",
     "tests/test_msa_pool_integration.py",

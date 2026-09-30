@@ -128,6 +128,8 @@ python -B af3_gui
 
 MobaXterm users can enable its X server and X11 forwarding. In Setup, choose **Check resources**, correct the reported issues, and save. No X11 display is required for CLI help.
 
+In Settings, the import/save/copy/check buttons sit directly below the page title. Drag the divider between panels to adjust their relative sizes. Each page remembers your proportions automatically for the next launch, with separate values for horizontal and vertical layouts. These personal display preferences are separate from the AF3 configuration JSON; no Save button is needed.
+
 ## First preview and run
 
 The installed `af3_gui` command works from any directory. Run the `python -B af3.py ...` examples below from the application directory, with the environment activated.

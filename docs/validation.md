@@ -1,5 +1,11 @@
 # Validation / 验收记录
 
+## Saved panel proportions and Setup actions — 2026-09-30
+
+The four configuration actions now appear directly below the Setup title. All draggable pane dividers save user-adjusted proportions in per-user Qt settings, with independent keys for Setup, Pulldown inputs, Scan inputs, the results structure viewer and Help. Responsive horizontal and vertical layouts have separate preferences. Restoring, hidden tabs and language/font changes do not overwrite the saved choice; rebuilt result views reuse it. Deployment configuration JSON is not modified by layout changes.
+
+Three new offscreen Qt checks cover bilingual action placement, auto-save before window close, restoration in a fresh process at a different width, result-view reconstruction, independent responsive orientations and invalid preference data. The full Windows run completed **204 tests: 202 passed, two platform-specific skips**, with no failures/errors. Both Setup previews were regenerated with empty task lists and placeholder paths and visually checked. Runtime/source equality, decoded GUI, offline licenses and privacy auditing also passed. Real cluster X11 interaction remains untested.
+
 ## Built-in GUI command and mirror option — 2026-09-30
 
 The existing CLI now provides `python -B af3.py install-gui`; no separate installer is distributed. Tests cover environment selection, managed-command migration, repeat installation, relocation, conflict protection, failed writes and CLI error reporting. The POSIX test invokes the real CLI from a minimal venv, then launches a synthetic GUI through PATH from an unrelated directory, including paths and arguments with spaces and shell characters. The local Windows run completed **201 tests: 199 passed, two skipped** (POSIX execution and platform-specific symlink permissions), with no failures/errors. Linux CI runs the POSIX test; the Windows result does not establish its outcome.

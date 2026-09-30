@@ -343,7 +343,7 @@ class _ScreenTab:
         outer.addLayout(vertical, 1)
         form = QtWidgets.QWidget(); lay = QtWidgets.QVBoxLayout(form)
         lay.setContentsMargins(0, 0, 0, 0)
-        mid = UI.ResponsiveColumns(threshold=900)
+        mid = UI.ResponsiveColumns(threshold=900, settings=app._settings, key=mode + '/inputs')
         for tag in ("a", "b"):
             gb = QtWidgets.QWidget()
             gl = QtWidgets.QVBoxLayout(gb); gl.setContentsMargins(0,0,0,0); gl.setSpacing(4)
@@ -1246,7 +1246,7 @@ class App(QtWidgets.QMainWindow):
         w = QtWidgets.QWidget(); UI.tab(self.tabs, self._wrap_scroll(w), UI.tr('Setup'))
         lay = QtWidgets.QVBoxLayout(w)
         lay.addLayout(self._intro("setup"))
-        split = UI.ResponsiveColumns(threshold=1050)
+        split = UI.ResponsiveColumns(threshold=1050, settings=self._settings, key='setup')
         lay.addWidget(split, 1)
         left = QtWidgets.QWidget()
         form = QtWidgets.QFormLayout(left)
@@ -1367,11 +1367,11 @@ class App(QtWidgets.QMainWindow):
         for b in (self.setup_import_button, b1, b2, b3):
             row.addWidget(b)
         row.addStretch(1)
-        form.addRow(row)
+        lay.insertLayout(1, row)
         self.setup_import_note = UI.QLabel('')
         self.setup_import_note.setWordWrap(True)
         self.setup_import_note.hide()
-        form.addRow(self.setup_import_note)
+        lay.insertWidget(2, self.setup_import_note)
         split.addPanel(left, 3)
         right = QtWidgets.QWidget()
         rl = QtWidgets.QVBoxLayout(right)
@@ -2629,7 +2629,7 @@ class App(QtWidgets.QMainWindow):
                 lab = lab.replace(e["a"] + "+" + e["b"],
                                   anno_side(e["a"]) + "+" + anno_side(e["b"]))
             labels.append(lab)
-        split = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        split = UI.PersistentSplitter(QtCore.Qt.Horizontal, settings=self._settings, key='results/structure')
         lay.addWidget(split, 1)
         left = QtWidgets.QWidget(); ll = QtWidgets.QVBoxLayout(left)
         ll.setContentsMargins(0, 0, 8, 0)
@@ -3069,6 +3069,7 @@ class App(QtWidgets.QMainWindow):
 
     def closeEvent(self,event):
         self._closing = True
+        self._settings.sync()
         self._cancel_pae_work()
         B.stop_pae_processes(shutdown=True)
         super().closeEvent(event)
@@ -3271,7 +3272,7 @@ class App(QtWidgets.QMainWindow):
         w = QtWidgets.QWidget(); UI.tab(self.tabs, w, UI.tr('Help'))
         lay = QtWidgets.QVBoxLayout(w); lay.setContentsMargins(20, 16, 20, 16)
         lay.addLayout(self._intro("help"))
-        split = QtWidgets.QSplitter(QtCore.Qt.Horizontal); lay.addWidget(split, 1)
+        split = UI.PersistentSplitter(QtCore.Qt.Horizontal, settings=self._settings, key='help'); lay.addWidget(split, 1)
         nav = QtWidgets.QWidget(); nl = QtWidgets.QVBoxLayout(nav); nl.setContentsMargins(0, 0, 12, 0)
         self.help_search = UI.QLineEdit(); UI.bind(self.help_search, 'setPlaceholderText', UI.tr('Search help')); self.help_search.setClearButtonEnabled(True)
         nl.addWidget(self.help_search)

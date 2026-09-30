@@ -190,14 +190,78 @@ def kind(code):
     return render(tr("type." + code)) if "type." + code in L.TEXT else code
 
 
+class PersistentSplitter(QtWidgets.QSplitter):
+    """Remember user-adjusted proportions per page and orientation, not screen pixels."""
+    def __init__(self, orientation, parent=None, *, settings=None, key=None):
+        super().__init__(orientation, parent)
+        self._settings = settings
+        self._layout_key = 'layout/splitters/v1/' + key if key else None
+        self._restoring = False
+        self._sync_timer = QtCore.QTimer(self)
+        self._sync_timer.setSingleShot(True)
+        self._sync_timer.setInterval(200)
+        self._sync_timer.timeout.connect(self._sync_preferences)
+        self.splitterMoved.connect(self._save_proportions)
+
+    def _preference_key(self):
+        direction = 'horizontal' if self.orientation() == QtCore.Qt.Horizontal else 'vertical'
+        return self._layout_key + '/' + direction
+
+    def _valid_sizes(self, sizes):
+        if not isinstance(sizes, (list, tuple)) or len(sizes) != self.count():
+            return None
+        try:
+            values = [int(value) for value in sizes]
+        except (TypeError, ValueError, OverflowError):
+            return None
+        if not values or any(value < 0 or value > 1000000000 for value in values) or not sum(values):
+            return None
+        return values
+
+    def _save_proportions(self, *_):
+        # Construction, hidden tabs and restoration must never replace a user's choice.
+        if self._restoring or not self.isVisible() or self._settings is None or not self._layout_key:
+            return
+        sizes = self._valid_sizes(self.sizes())
+        if sizes is not None:
+            self._settings.setValue(self._preference_key(), sizes)
+            self._sync_timer.start()
+
+    def _sync_preferences(self):
+        if self._settings is not None:
+            self._settings.sync()
+
+    def restore_proportions(self):
+        if not isValid(self) or self._restoring or not self.isVisible() or self._settings is None or not self._layout_key:
+            return
+        sizes = self._valid_sizes(self._settings.value(self._preference_key()))
+        if sizes is None:
+            return
+        self._restoring = True
+        try:
+            # Qt scales these weights to the current space and respects pane minimums.
+            self.setSizes(sizes)
+        finally:
+            self._restoring = False
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        # Restore after layout activation; hidden tabs and rebuilt result views also use this.
+        QtCore.QTimer.singleShot(0, self.restore_proportions)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.restore_proportions()
+
+
 class ResponsiveColumns(QtWidgets.QWidget):
     """Resizable panes; retain independent wide/narrow sizes and editor state."""
-    def __init__(self, widgets=(), threshold=900, parent=None):
+    def __init__(self, widgets=(), threshold=900, parent=None, *, settings=None, key=None):
         super().__init__(parent)
         self.threshold = threshold
         self.box = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.LeftToRight, self)
         self.box.setContentsMargins(0, 0, 0, 0); self.box.setSpacing(0)
-        self.splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        self.splitter = PersistentSplitter(QtCore.Qt.Horizontal, settings=settings, key=key)
         self.splitter.setChildrenCollapsible(False)
         self.splitter.setHandleWidth(8)
         self.splitter.setObjectName('paneSplitter')
@@ -224,6 +288,7 @@ class ResponsiveColumns(QtWidgets.QWidget):
             self._remember_sizes()
             self.splitter.setOrientation(orientation)
             self.splitter.setSizes(self._sizes.get(orientation, [weight*200 for weight in self._weights]))
+            self.splitter.restore_proportions()
         super().resizeEvent(event)
 
 
