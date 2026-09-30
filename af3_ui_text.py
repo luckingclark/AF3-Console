@@ -8,6 +8,10 @@ def register(english, chinese):
 
 
 for _en, _zh in {
+    'Import configuration JSON': '导入配置 JSON',
+    'Could not import settings': '配置导入失败',
+    'Imported from {0}. Review and save to {1}; the source file is not selected as the save destination. Advanced imported settings are retained. Saving switches this GUI to personal defaults. Remove AF3_CONFIG / AF3_BASE from shell startup files if you set them there.': '已从 {0} 导入。请核对后保存到 {1}，不会将导入源文件设为保存位置。未显示在表单中的高级参数也会保留。保存后本窗口切换为个人默认配置；若在 shell 启动文件中设置过 AF3_CONFIG／AF3_BASE，请移除这些覆盖项。',
+    'Personal settings saved to {0}. Future launches load them automatically without AF3_CONFIG, unless your shell sets an override.': '个人设置已保存到 {0}。下次启动会自动读取，无需指定 AF3_CONFIG；请确保 shell 未设置覆盖项。',
     'Add an MSA backup path (up to three paths in total)': '添加 MSA 备份路径（合计最多 3 个路径）',
     'Add MSA backup path': '添加 MSA 备份路径',
     'Remove MSA backup path': '移除 MSA 备份路径',

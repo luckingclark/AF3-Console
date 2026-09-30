@@ -46,6 +46,16 @@ Conda is the recommended route for cluster installations. Dependency ranges are 
 
 ## Configure your resources
 
+### Import an existing configuration in the GUI (recommended)
+
+If a colleague supplies a configuration JSON, upload it to your cluster account and launch the GUI normally. In Setup, choose **Import configuration JSON**, select the file, adjust your own workspace and other fields, choose **Check resources**, then **Save user settings**.
+
+Import fills the settings without writing files. Saving writes the personal default `~/.config/af3_console/config.json`; an existing file is backed up with a `before-import` suffix. The template is not selected as the save destination. Imported MSA thread counts, compilation buckets and other parameters absent from the form are retained. Unknown fields or invalid values are reported rather than silently discarded.
+
+After this one-time setup, ordinary GUI launches read your personal settings automatically; no repeated import or `AF3_CONFIG` is needed. Saving an import switches this GUI and its future child processes to personal defaults; submitted jobs retain their snapshots. If `.bashrc` or a launch script sets `AF3_CONFIG` / `AF3_BASE`, remove those overrides once. The application does not edit shell startup files.
+
+### Manual configuration (optional)
+
 Either fill out **Setup** in the GUI or copy the example to your user configuration:
 
 ```bash

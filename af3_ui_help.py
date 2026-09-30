@@ -214,6 +214,7 @@ GUIDES = [
 ('setup', '配置、目录与共享资源', 'Paths and shared resources', '''
 <p>设置页区分“程序放在哪里”和“数据写到哪里”。安装目录存放 GUI 与计算脚本；工作目录存放你的任务和缓存。两者可以不同，修改工作目录不会搬动程序，也不会移动已经生成的数据。</p>
 <h2>第一次配置，优先核对这几处</h2>
+<p>已有同事提供的配置 JSON 时，点击“导入配置 JSON”填入设置，再修改个人工作目录及其他项目，检测资源后点击“保存用户配置”。导入本身不写文件；保存会写入自己的 ~/.config/af3_console/config.json，并保留其中已有设置的备份，实验室模板不作为保存位置。未显示在表单中的 MSA 线程数、编译桶等参数也会保留。下次启动自动读取个人设置，无需重复导入或设置 AF3_CONFIG。</p>
 <p>工作目录应当是你在集群上的可写目录，而且计算节点也能访问。不要把长期使用的程序或结果放在登录节点的临时目录。容器镜像指向 .sif 文件，数据库指向已有 AF3 数据库目录，模型权重指向可读取的权重目录。路径是在集群上解释的，不是本机 Windows 路径。</p>
 <p>工作目录变化时，没有手动覆盖的派生路径会跟着变化。若你把模型或 JAX 缓存改成了共享路径，之后修改工作目录仍会保留这个覆盖。保存前看一遍右侧目录树，最容易发现结果写错位置或共享路径意外改动的问题。</p>
 <h2>这些目录各自保存什么</h2>
@@ -236,6 +237,7 @@ GUIDES = [
 ''', '''
 <p>Setup separates the program location from your data workspace. The installation contains the GUI and computation scripts; the workspace holds tasks and caches. Changing the workspace neither moves the program nor relocates existing data.</p>
 <h2>Check these paths first</h2>
+<p>If a colleague supplies a configuration JSON, choose Import configuration JSON, adjust your workspace and other fields, check resources, then Save user settings. Import only fills the form. Saving writes ~/.config/af3_console/config.json and backs up any previous personal file; the template is not selected as the save destination. Advanced parameters such as MSA threads and compilation buckets are retained. Future launches read your personal settings without another import or AF3_CONFIG.</p>
 <p>Your workspace must be writable and visible to compute nodes. Keep long-lived program files and results out of login-node temporary directories. Select the .sif container file, the existing AF3 database directory and readable model weights. These are cluster paths, not paths on your Windows computer.</p>
 <p>Derived paths follow workspace changes unless you have overridden them. A manually chosen shared model or JAX cache path is retained. Before saving, review the directory tree to catch an unintended output location or shared-path change.</p>
 <h2>What lives in each directory</h2>

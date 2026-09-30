@@ -1254,6 +1254,8 @@ class App(QtWidgets.QMainWindow):
         form.setRowWrapPolicy(QtWidgets.QFormLayout.WrapLongRows)
         heading = UI.QLabel("Workspace"); heading.setObjectName("sectionhead"); form.addRow(heading)
         cfg = B.current_config()
+        self._setup_import_config = None
+        self._setup_import_explicit = set()
         labels = [
             ("HOST_BASE", "工作目录"),
             ("HOST_SIF", "AF3 container image (.sif)"),
@@ -1353,6 +1355,8 @@ class App(QtWidgets.QMainWindow):
         self._setup_orig_misc = {k: e.text().strip() for k, e in self.setup_misc.items()}
         self.setup_edits["HOST_BASE"].textChanged.connect(self._setup_derive)
         row = QtWidgets.QHBoxLayout()
+        self.setup_import_button = UI.QPushButton(UI.tr('Import configuration JSON'))
+        self.setup_import_button.clicked.connect(self._setup_import)
         b1 = UI.QPushButton(UI.tr('保存用户配置'))
         b1.setObjectName("primary")
         b1.clicked.connect(self._setup_apply)
@@ -1360,10 +1364,14 @@ class App(QtWidgets.QMainWindow):
         b2.clicked.connect(lambda: self._copy(self._setup_config_lines(), "Config block"))
         b3 = UI.QPushButton(UI.tr('检测资源'))
         b3.clicked.connect(self._check_resources)
-        for b in (b1, b2, b3):
+        for b in (self.setup_import_button, b1, b2, b3):
             row.addWidget(b)
         row.addStretch(1)
         form.addRow(row)
+        self.setup_import_note = UI.QLabel('')
+        self.setup_import_note.setWordWrap(True)
+        self.setup_import_note.hide()
+        form.addRow(self.setup_import_note)
         split.addPanel(left, 3)
         right = QtWidgets.QWidget()
         rl = QtWidgets.QVBoxLayout(right)
@@ -1389,6 +1397,49 @@ class App(QtWidgets.QMainWindow):
         for e in {**self.setup_edits, **self.setup_derived}.values():
             e.textChanged.connect(lambda: self._setup_tree())
         self._setup_tree()
+
+    def _setup_import(self):
+        path, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, UI.render(UI.tr('Import configuration JSON')), '', 'JSON (*.json)')
+        if not path:
+            return
+        try:
+            if os.environ.get('AF3_SNAPSHOT'):
+                raise ValueError('Start the regular GUI without AF3_SNAPSHOT to import personal settings')
+            values, explicit = B.read_config_import(path)
+        except Exception as exc:
+            UI.QMessageBox.critical(self, UI.tr('Could not import settings'), str(exc))
+            return
+        self._setup_import_config = values
+        self._setup_import_explicit = explicit
+        self._setup_fill(values)
+        # An explicit shared path stays fixed even if it matches the template base.
+        self._setup_derived_dirty = explicit & set(self.setup_derived)
+        self.setup_edits['HOST_BASE'].setReadOnly(False)
+        self.setup_edits['HOST_BASE'].setToolTip('')
+        UI.bind(self.setup_import_note, 'setText', UI.f(
+            'Imported from {0}. Review and save to {1}; the source file is not selected as the save destination. Advanced imported settings are retained. Saving switches this GUI to personal defaults. Remove AF3_CONFIG / AF3_BASE from shell startup files if you set them there.',
+            path, B.personal_config_path()))
+        self.setup_import_note.show()
+        self._setup_tree()
+
+    def _setup_fill(self, values):
+        fields = {**self.setup_edits, **self.setup_derived}
+        for field in fields.values():
+            field.blockSignals(True)
+        try:
+            for key, field in fields.items():
+                field.setText(str(values.get(key, '')))
+        finally:
+            for field in fields.values():
+                field.blockSignals(False)
+        for edit, row in list(zip(self.setup_msa_backup_edits, self._setup_msa_backup_rows)):
+            self._setup_remove_msa_backup(edit, row)
+        for path in values.get('MSA_BACKUP_DIRS', []):
+            self._setup_add_msa_backup(path)
+        self._setup_orig_base = self.setup_edits['HOST_BASE'].text().strip()
+        self._setup_orig_derived = {k: e.text().strip() for k, e in self.setup_derived.items()}
+        self._setup_derived_dirty.clear()
 
     def _setup_add_msa_backup(self, path=''):
         if len(self.setup_msa_backup_edits) >= 2:
@@ -1428,8 +1479,16 @@ class App(QtWidgets.QMainWindow):
         return [edit.text().strip() for edit in self.setup_msa_backup_edits if edit.text().strip()]
 
     def _setup_values(self):
-        values = {key: edit.text().strip() for key, edit in {**self.setup_edits, **self.setup_derived}.items()}
+        values = dict(self._setup_import_config or {})
+        values.update({key: edit.text().strip() for key, edit in {**self.setup_edits, **self.setup_derived}.items()})
         values['MSA_BACKUP_DIRS'] = self._setup_msa_backups()
+        if self._setup_import_config is not None:
+            if 'HOST_INFER_DATA' not in self._setup_import_explicit:
+                base = values['HOST_BASE']
+                values['HOST_INFER_DATA'] = os.path.join(base, 'infer_data') if base else ''
+            if ('AUX_PARTITION' not in self._setup_import_explicit and
+                    values['AUX_PARTITION'] == self._setup_import_config['AUX_PARTITION']):
+                values['AUX_PARTITION'] = ''
         return values
 
     def _startup_msa_sync(self):
@@ -1565,7 +1624,7 @@ class App(QtWidgets.QMainWindow):
         self._setup_tree()
 
     def _setup_config_lines(self):
-        values={'MSA_BACKUP_DIRS': self._setup_msa_backups()}
+        values=self._setup_values()
         for key,field in {**self.setup_edits,**self.setup_derived}.items():
             value=field.text().strip()
             if B.EDITABLE_CONFIG[key][0]=="int" and value.isdigit():value=int(value)
@@ -1595,7 +1654,7 @@ class App(QtWidgets.QMainWindow):
         for key,description in [('HOST_OUTPUT','Plans, logs and prediction results'),('HOST_MSA_DATA','Shared alignment inputs; reused by predictions'),
                                 ('HOST_MODELS','AF3 model weights'),('HOST_CACHE','Sequences and application assets'),
                                 ('HOST_JAX_CACHE','JAX compilation cache'),('HOST_INFER_DATA','Reusable monomer inference results')]:
-            path=paths.get(key,getattr(B,key,''))
+            path=paths.get(key,self._setup_values().get(key,getattr(B,key,'')))
             inside=path.startswith(base.rstrip('/\\')+os.sep) if base else False
             # os.path is native to the deployment host; external paths stay explicit.
             shown=os.path.relpath(path,base) if inside else path
@@ -1609,11 +1668,12 @@ class App(QtWidgets.QMainWindow):
         self.setup_directory_map.setHtml('<html><body style="color:'+CC['ink']+'">'+''.join(rows)+'</body></html>')
         t=lambda key:html.escape(UI.render(UI.tr(key)))
         parts=['<h3>'+t('Program and user data are independent.')+'</h3>']
-        for title,value in [('Configuration file',B.R.config_path()),('Installed core',B.AF3_PY)]:
+        config_path = B.personal_config_path() if self._setup_import_config is not None else B.R.config_path()
+        for title,value in [('Configuration file',config_path),('Installed core',B.AF3_PY)]:
             parts.append('<p><b>'+t(title)+'</b><br>'+html.escape(value)+'</p>')
         overrides = [(key, os.environ[key]) for key in B.R.CONFIG_ENV_KEYS
                      if os.environ.get(key, '').strip() and not os.environ.get('AF3_SNAPSHOT')]
-        if overrides:
+        if overrides and self._setup_import_config is None:
             parts.append('<h3>'+t('Active environment overrides')+'</h3>')
             for key, value in overrides:
                 parts.append('<p><code>'+esc(key)+'</code>: '+esc(value)+'</p>')
@@ -1634,20 +1694,19 @@ class App(QtWidgets.QMainWindow):
         updates={k:e.text().strip() for k,e in {**self.setup_edits,**self.setup_derived}.items() if e.text().strip()!=str(current.get(k,""))}
         if self._setup_msa_backups() != current.get('MSA_BACKUP_DIRS', []):
             updates['MSA_BACKUP_DIRS'] = self._setup_msa_backups()
-        if not updates:
+        importing = self._setup_import_config is not None
+        if not updates and not importing:
             self.statusBar().showMessage(UI.render(UI.tr('配置没有变化')), 4000);return
-        count,path,error=B.update_af3_config(updates)
+        count,path,error = B.save_imported_config(self._setup_values(), self._setup_import_explicit) if importing else B.update_af3_config(updates)
         if error:UI.QMessageBox.critical(self, UI.tr('配置保存失败'), error);return
+        self._setup_import_config = None
+        self._setup_import_explicit = set()
         effective = B.current_config()['editable']
-        for key, field in {**self.setup_edits, **self.setup_derived}.items():
-            field.setText(str(effective.get(key, '')))
-        for edit, row in list(zip(self.setup_msa_backup_edits, self._setup_msa_backup_rows)):
-            self._setup_remove_msa_backup(edit, row)
-        for path in effective.get('MSA_BACKUP_DIRS', []):
-            self._setup_add_msa_backup(path)
-        self._setup_orig_base=self.setup_edits["HOST_BASE"].text().strip()
-        self._setup_orig_derived={k:e.text().strip() for k,e in self.setup_derived.items()}
-        self._setup_derived_dirty.clear()
+        self._setup_fill(effective)
+        if importing:
+            UI.bind(self.setup_import_note, 'setText', UI.f(
+                'Personal settings saved to {0}. Future launches load them automatically without AF3_CONFIG, unless your shell sets an override.', path))
+            self.setup_import_note.show()
         UI.bind(self, 'setWindowTitle', UI.f("{0}{1}", UI.tr('AF3 Console — '), B.HOST_BASE))
         self._setup_tree()
         self.statusBar().showMessage(UI.render(UI.percent('已保存 %s 项配置：%s', (count,path))), 15000)

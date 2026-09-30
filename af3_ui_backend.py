@@ -2124,6 +2124,89 @@ def current_config():
     return {"editable": editable, "derived": derived}
 
 
+def personal_config_path():
+    return os.path.join(os.path.expanduser('~'), '.config', 'af3_console', 'config.json')
+
+
+def importable_config_keys():
+    return set(EDITABLE_CONFIG) | set(R.INTEGER_CONFIG_KEYS) | {
+        'HOST_INFER_DATA', 'CONTROLLER_TIME', 'WATCHER_TIME',
+    }
+
+
+def imported_config_values(explicit):
+    """Resolve a template without reading/writing user settings or changing env."""
+    if not isinstance(explicit, dict):
+        raise ValueError('Configuration must be a JSON object')
+    unknown = set(explicit) - importable_config_keys()
+    if unknown:
+        raise ValueError('Unsupported configuration fields: ' + ', '.join(sorted(unknown)))
+    clean = R.normalize_config(explicit)
+    for key in ('CONTROLLER_TIME', 'WATCHER_TIME'):
+        if key in clean and (not isinstance(clean[key], str) or
+                             not re.fullmatch(r'(?:[0-9]+-)?[0-9]+:[0-5][0-9](?::[0-5][0-9])?', clean[key])):
+            raise ValueError(key + ' must be a Slurm time such as 02:00:00 or 7-00:00:00')
+    values = {k: v for k, v in af3._CONFIG_DEFAULTS.items() if k in importable_config_keys()}
+    base = clean.get('HOST_BASE', values['HOST_BASE'])
+    for key, suffix in R.DERIVED.items():
+        values[key] = os.path.join(base, suffix) if base else ''
+    values.update(clean)
+    values['AUX_PARTITION'] = clean.get('AUX_PARTITION') or values['MSA_PARTITION']
+    values = R.normalize_config(values)
+    R.msa_pool_paths(values)
+    return values
+
+
+def read_config_import(path):
+    with open(path, encoding='utf-8-sig') as stream:
+        text = stream.read(1024 * 1024 + 1)
+    if len(text) > 1024 * 1024:
+        raise ValueError('Configuration JSON exceeds 1 MiB')
+    explicit = json.loads(text)
+    if not explicit:
+        raise ValueError('Configuration is empty')
+    values = imported_config_values(explicit)
+    if not explicit.get('AUX_PARTITION'):
+        values['AUX_PARTITION'] = ''
+    return values, set(explicit)
+
+
+def _reload_config_state():
+    af3.reload_config()
+    for key in ('HOST_BASE', 'HOST_OUTPUT', 'HOST_MSA_DATA', 'HOST_SPECS', 'HOST_INFER_DATA'):
+        globals()[key] = getattr(af3, key)
+    globals()['DOWNLOADS_DIR'] = os.path.join(af3.HOST_BASE, 'downloads')
+    globals()['UI_TMP_DIR'] = os.path.join(af3.HOST_CACHE, 'ui_inputs')
+
+
+def save_imported_config(values, explicit_keys=None):
+    """Save a reviewed import as personal defaults, leaving its source intact."""
+    try:
+        if os.environ.get('AF3_SNAPSHOT'):
+            raise ValueError('Start the regular GUI without AF3_SNAPSHOT to import personal settings')
+        clean = imported_config_values(values)
+        if not values.get('AUX_PARTITION'):
+            clean['AUX_PARTITION'] = ''
+        if explicit_keys is not None and 'HOST_INFER_DATA' not in explicit_keys:
+            # This path has no form field: keep its normal base-following rule.
+            clean.pop('HOST_INFER_DATA', None)
+        path = personal_config_path()
+        with R.file_lock(path + '.lock'):
+            if os.path.exists(path):
+                # Keep the previous personal file, including fields we do not edit.
+                backup = path + '.before-import-' + time.strftime('%Y%m%d-%H%M%S') + '-' + uuid.uuid4().hex[:8]
+                shutil.copy2(path, backup)
+            R.atomic_json(path, clean)
+        # Selecting personal defaults is an explicit GUI action. Only this
+        # process and its future children switch; the parent SSH shell is untouched.
+        os.environ.pop('AF3_CONFIG', None)
+        os.environ.pop('AF3_BASE', None)
+        _reload_config_state()
+        return len(clean), path, None
+    except Exception as exc:
+        return 0, None, str(exc)
+
+
 def update_af3_config(updates):
     if not updates: return 0, None, "没有改动"
     try:
@@ -2135,11 +2218,7 @@ def update_af3_config(updates):
         candidate = {"__file__": af3.__file__}
         R.configure(candidate, af3._CONFIG_DEFAULTS, updates=clean, apply_assets=False)
         saved = R.save_config(clean)
-        af3.reload_config()
-        for key in ("HOST_BASE","HOST_OUTPUT","HOST_MSA_DATA","HOST_SPECS","HOST_INFER_DATA"):
-            globals()[key] = getattr(af3,key)
-        globals()["DOWNLOADS_DIR"] = os.path.join(af3.HOST_BASE,"downloads")
-        globals()["UI_TMP_DIR"] = os.path.join(af3.HOST_CACHE,"ui_inputs")
+        _reload_config_state()
         return len(clean), saved, None
     except Exception as exc: return 0, None, str(exc)
 

@@ -65,6 +65,7 @@
     "packaging/release_files.json",
     "requirements-dev.txt",
     "requirements.txt",
+    "tests/test_config_import_ui.py",
     "tests/test_config_release.py",
     "tests/test_msa_job_names.py",
     "tests/test_msa_layout.py",

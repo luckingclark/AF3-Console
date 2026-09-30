@@ -1,5 +1,9 @@
 # Validation / 验收记录
 
+## Configuration import update — 2026-09-30
+
+Setup now imports a configuration JSON for review and saves a personal default without selecting the template as its save destination. Existing personal settings are backed up before replacement. Tests cover fresh-process persistence, advanced parameters absent from the form, shared paths, invalid input, canceled selection and failed-write recovery. The local Windows/Python 3.12 run completed **195 tests: 194 passed, one platform-specific symlink test skipped, zero failures/errors**. Deployment/source equality, decoded GUI, privacy audit, fonts, bilingual About and offline licenses also passed. Real Slurm, AF3 and interactive cluster X11 execution were not performed for this update. Earlier records below describe the previous build.
+
 Release: **0.1.0**. Review date: **2026-09-24**.
 
 This file records local release-preparation evidence, not a claim that all cluster installations have been tested. No real research input, prediction result, remote Slurm job, or AF3 model parameter was used in the automated public checks.
