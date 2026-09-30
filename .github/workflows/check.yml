@@ -15,7 +15,7 @@ jobs:
       - name: Obtain the exact matching source and tests
         uses: actions/checkout@v4
         with:
-          ref: 9c11d701f7ba70c04efb578d19cbff5c106e3c33
+          ref: 56059d3188ecc0c278edeee118badd10535b765c
           path: .source-check
       - uses: actions/setup-python@v5
         with:

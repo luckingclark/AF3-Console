@@ -49,6 +49,7 @@ Select the **main** branch, choose **Code → Download ZIP**, and unpack it into
 conda env create -f environment.yml
 conda activate af3-console
 cd AF3_Console
+python -B install_command.py
 ```
 
 ### Minimal offline check
@@ -71,9 +72,15 @@ AF3 Console 0.1.0
 
 ### Open the GUI
 
+Already using the first GitHub version? Update only `af3_gui` and add `install_command.py`; see the [upgrade checklist](docs/usage.en.md#upgrade-from-the-first-github-version).
+
+The installer above registers `af3_gui` in the active environment once. After `conda activate af3-console`, you can run it from **any directory**, including a new SSH session:
+
 ```bash
-python -B af3_gui
+af3_gui
 ```
+
+Keep the extracted application folder in place. After moving or upgrading it, run `python -B install_command.py` from the new `AF3_Console/` directory to update the command. No administrator access or shell startup edits are needed.
 
 Success at this stage means the main window opens and **Settings** and **Help → About** are accessible. AF3 resources can be configured afterward. If the display cannot open, check X11 forwarding; see [troubleshooting](docs/usage.en.md#troubleshooting).
 
@@ -113,7 +120,7 @@ The 2026-09-30 import update passed 194 local Windows tests, with one platform-s
 
 The previous [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333) passed the deployment checks and **191 tests, with 0 skipped**, using Python 3.12 on Ubuntu 24.04. Checks include runtime/source consistency, isolated startup, offline licenses, artificial data and mocked scheduling. They do not establish successful execution of a real AF3 prediction on your cluster.
 
-Real Slurm/AF3 execution, a fresh Linux Conda installation, interactive X11 use, GPU token limits and cross-cluster compatibility still require deployment validation. See the [validation record](https://github.com/luckingclark/AF3-Console/blob/9c11d701f7ba70c04efb578d19cbff5c106e3c33/docs/validation.md). No performance advantage over the [related tools](docs/comparison.md) is claimed.
+Real Slurm/AF3 execution, a fresh Linux Conda installation, interactive X11 use, GPU token limits and cross-cluster compatibility still require deployment validation. See the [validation record](https://github.com/luckingclark/AF3-Console/blob/56059d3188ecc0c278edeee118badd10535b765c/docs/validation.md). No performance advantage over the [related tools](docs/comparison.md) is claimed.
 
 ## Author, licensing and citation
 

@@ -49,6 +49,7 @@ PAE 引导的扫描需要单体 PAE，缺少时可能需要额外运行单体预
 conda env create -f environment.yml
 conda activate af3-console
 cd AF3_Console
+python -B install_command.py
 ```
 
 ### 最小离线检查
@@ -71,9 +72,15 @@ AF3 Console 0.1.0
 
 ### 打开界面
 
+已经在用最初的 GitHub 版本时，只需更新 `af3_gui` 并新增 `install_command.py`，见[升级清单](usage.zh-CN.md#从最初的-github-版本升级到当前启动方式)。
+
+上述安装脚本只需运行一次，会在当前环境中注册 `af3_gui` 命令。以后包括新开的 SSH 会话，执行 `conda activate af3-console` 后，都可在**任意目录**运行：
+
 ```bash
-python -B af3_gui
+af3_gui
 ```
+
+请保留解压后的程序目录。搬动或升级程序后，在新的 `AF3_Console/` 目录重新执行 `python -B install_command.py`，即可更新命令指向。不需要管理员权限，也不需要修改 shell 启动文件。
 
 此阶段的成功标志是主窗口打开，能够访问**设置**及**帮助 → 关于**；AF3 资源可以随后填写。若无法打开图形显示，请检查 X11 转发，参见[使用指南](usage.zh-CN.md)。
 
@@ -113,7 +120,7 @@ python -B af3_gui
 
 此前的 [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333) 在 Ubuntu 24.04、Python 3.12 下通过部署检查和 **191 项测试，0 跳过**，包括运行文件与源码一致性、隔离启动、离线许可证、人工数据与模拟调度检查。这些不代表已在你的集群完成真实 AF3 预测。
 
-真实 Slurm／AF3 执行、全新 Linux Conda 安装、交互式 X11 使用、GPU token 上限和跨集群兼容性仍需部署验收。参见[验收记录](https://github.com/luckingclark/AF3-Console/blob/9c11d701f7ba70c04efb578d19cbff5c106e3c33/docs/validation.md)。本项目不声称比[相关工具](comparison.zh-CN.md)有性能优势。
+真实 Slurm／AF3 执行、全新 Linux Conda 安装、交互式 X11 使用、GPU token 上限和跨集群兼容性仍需部署验收。参见[验收记录](https://github.com/luckingclark/AF3-Console/blob/56059d3188ecc0c278edeee118badd10535b765c/docs/validation.md)。本项目不声称比[相关工具](comparison.zh-CN.md)有性能优势。
 
 ## 作者、许可与引用
 

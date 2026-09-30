@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / 'AF3_Console'
 RUNTIME = ('af3_gui', 'af3.py', 'af3_runtime.py', 'af3_pae.py',
            'af3_msa_sync.py', 'af3_pae_domains.py', 'af3_networkx_community.py',
-           'fonts/wqy-microhei.ttc')
+           'fonts/wqy-microhei.ttc', 'install_command.py')
 
 
 def check(source):
