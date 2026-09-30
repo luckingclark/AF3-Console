@@ -1,8 +1,10 @@
 # Validation / 验收记录
 
-## Environment launcher update — 2026-09-30
+## Built-in GUI command and mirror option — 2026-09-30
 
-`install_command.py` adds the environment-local `af3_gui` command. Five new tests cover environment selection, repeat installation, relocation, preservation of unrelated commands, failed-write recovery and actual POSIX execution from an unrelated directory using a venv Python. The local Windows run completed **200 tests: 198 passed, two skipped** (POSIX execution and platform-specific symlink permissions), with zero failures/errors. Linux CI exercises the POSIX launch and argument/path quoting. Real cluster execution remains untested. Earlier records below refer to the preceding builds.
+The existing CLI now provides `python -B af3.py install-gui`; no separate installer is distributed. Tests cover environment selection, managed-command migration, repeat installation, relocation, conflict protection, failed writes and CLI error reporting. The POSIX test invokes the real CLI from a minimal venv, then launches a synthetic GUI through PATH from an unrelated directory, including paths and arguments with spaces and shell characters. The local Windows run completed **201 tests: 199 passed, two skipped** (POSIX execution and platform-specific symlink permissions), with no failures/errors. Linux CI runs the POSIX test; the Windows result does not establish its outcome.
+
+The user-supplied `environment_THUmirrors.yml` is retained unchanged. Its environment name and dependency constraints match `environment.yml`; only channel selection differs. Deployment/source consistency, isolated GUI startup, offline licenses, bilingual command equality and the release privacy audit passed. The mirror environment has not been solved or installed on a real Linux cluster during this review, and no download-speed claim is made. The mirrors and deployment instructions are alternatives for fresh installation; an existing working environment does not need recreation.
 
 ## Configuration import update — 2026-09-30
 

@@ -30,9 +30,22 @@ From the unpacked directory, create an isolated environment:
 
 ```bash
 conda env create -f environment.yml
+```
+
+Or use [environment_THUmirrors.yml](../environment_THUmirrors.yml) to download dependencies through the **Tsinghua University TUNA mirrors**, if that route works better for your network. Run **one** environment-creation command, not both:
+
+```bash
+conda env create -f environment_THUmirrors.yml
+```
+
+Both files create `af3-console` with the same dependency version constraints. The mirror file uses the TUNA conda-forge and bioconda channels with `nodefaults`; no global `.condarc` edit is required. See the [TUNA instructions](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/). Mirror availability and installation on your cluster still need verification; if the mirror is unavailable, use `environment.yml`. If your existing environment works, skip creation and activate it directly.
+
+After creating the environment with either file, continue:
+
+```bash
 conda activate af3-console
 python -B af3.py --version
-python -B install_command.py
+python -B af3.py install-gui
 ```
 
 Alternatively, on a supported system with Python 3.12:
@@ -41,14 +54,14 @@ Alternatively, on a supported system with Python 3.12:
 python -m venv /path/to/your/af3-console-env
 source /path/to/your/af3-console-env/bin/activate
 python -m pip install -r requirements.txt
-python -B install_command.py
+python -B af3.py install-gui
 ```
 
 Conda is the recommended route for cluster installations. Dependency ranges are declared, rather than exporting a developer's environment or private package-channel URLs. Older Linux/glibc installations may require a separately validated environment; no blanket compatibility claim is made.
 
-The installer registers `af3_gui` in the active Conda environment (or venv). Run it once from the directory containing `af3_gui`; later, activating that environment makes the command available from any directory. It preserves the calling directory and uses the environment's Python, without changing `.bashrc` or requiring administrator access. It will not overwrite an unrelated command of the same name.
+The one-time `python -B af3.py install-gui` step registers `af3_gui` in the active Conda environment (or venv). The installation succeeds when it prints `Installed: .../bin/af3_gui`. After activating this environment, run `af3_gui` from any directory. No separate installer file, administrator access or `.bashrc` edit is needed. The command uses the environment's Python and preserves the calling directory. It refuses to replace an unrelated command. After moving the application, rerun this step from its new directory; `command -v af3_gui` should point into the active environment.
 
-After moving or upgrading the software, rerun `python -B install_command.py` in the new application directory. Keep that directory and the environment accessible to compute nodes. Do not remove an older installation while queued or running jobs still reference it. If an old command remains cached by Bash, run `hash -r`; `command -v af3_gui` should show this environment's `bin/af3_gui`.
+Keep the application directory and Python environment accessible to compute nodes. Do not remove an installation while queued or running jobs still reference it.
 
 ## Configure your resources
 
@@ -110,14 +123,14 @@ Connect with X11 forwarding enabled in your SSH client, for example:
 ssh -X your_username@your_login_host
 conda activate af3-console
 cd /path/to/your/af3-console
-af3_gui
+python -B af3_gui
 ```
 
 MobaXterm users can enable its X server and X11 forwarding. In Setup, choose **Check resources**, correct the reported issues, and save. No X11 display is required for CLI help.
 
 ## First preview and run
 
-The `af3_gui` shortcut is available from any directory; the `python -B af3.py ...` CLI examples below still run from the directory containing `af3.py`.
+The installed `af3_gui` command works from any directory. Run the `python -B af3.py ...` examples below from the application directory, with the environment activated.
 
 The identifiers below are **syntax placeholders**, not a biological example. Substitute your own identifiers before using the prediction commands. Even `--dry-run` may resolve sequences over the network.
 
@@ -150,21 +163,6 @@ PAE-guided scans can first schedule full-length monomer predictions when their r
 The diagram shows complete prediction workflows. If required full-length monomer PAE is missing, the PAE mode first predicts those monomers. See UI Help for stage controls and MSA strategies.
 
 ## Results and upgrades
-
-### Upgrade from the first GitHub version
-
-The first GitHub source snapshot, `03c29106fd23b20928c9591b35b22b2508c9adfd`, was checked: its six computation/runtime support modules and font match the current version. For this update, obtain only these files from `AF3_Console/` on the latest main branch:
-
-| File | Action and purpose |
-|---|---|
-| `af3_gui` | Replace the old file to get configuration import and the other GUI updates. |
-| `install_command.py` | Add this file to install the environment's `af3_gui` command. |
-
-Put both beside your existing `af3.py`. Early repository downloads placed the scripts at the extraction root; there is no need to move that installation. Close the old GUI and retain a copy of its launcher before replacing it. Keep your configuration, task snapshots, MSA pools, models, databases and licenses.
-
-In that application directory, activate your existing `af3-console` environment and run `python -B install_command.py` once. You can then run `af3_gui` from any directory. Dependency declarations are unchanged, so an existing working environment need not be recreated. Refer to the new README and this guide for updated instructions.
-
-This two-file update applies to the **first version uploaded to GitHub**. If you have the older **September 12 five-file ZIP**, download the complete main branch instead: that package lacks the independent modules and licenses now required.
 
 By default, each batch lives under `~/AF3/output/`; MSA and full-length inference pools live under `~/AF3/msa_data/` and `~/AF3/infer_data/`. Results remain on the cluster. Use the displayed folder paths with your SFTP client to retrieve them. Closing the GUI does not cancel submitted Slurm jobs.
 

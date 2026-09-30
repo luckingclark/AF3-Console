@@ -6,7 +6,7 @@ AF3 Console 在基于 AlphaFold 3 的批量互作筛选（Pulldown）之外，�
 
 在固定长度滑动窗口（Window Scan）的基础上，项目进一步引入 PAE 结构域窗口（PAE Domain Window），旨在减少人为截断造成的假阳性。固定窗口可能从结构域内部切开，破坏原有折叠单元，例如移除自身 β 链后，其他蛋白片段可能在预测中“补位”，形成依赖截断边界的高分伪互作。为此，项目复用 ChimeraX **Color PAE Domains** 的分域逻辑，根据单体预测的 PAE 将相对位置较确定的残基聚为结构单元候选，再据此构造扫描片段，尽量保留结构完整性、减少任意断域，而无需依赖现成的结构域注释。该策略为切片提供了结构依据，其降低假阳性的实际效果仍需通过系统比较和实验验证。
 
-面向 Slurm 集群用户的双语桌面与命令行工作台，整合 AlphaFold 3 输入准备、提交、监控、批量筛选、片段扫描及结果查看。项目作者：**PKU-Gaolab, Ming-Ao Lu**。
+面向 Slurm 集群用户的双语桌面与命令行工作台，整合 AlphaFold 3 输入准备、提交、监控、批量筛选、片段扫描及结果查看。
 
 ## 模式流程
 
@@ -21,9 +21,11 @@ Run 预测指定蛋白或复合物；Pulldown 筛选两组输入的组合；Scan
 ```bash
 conda env create -f environment.yml
 conda activate af3-console
-python -B install_command.py
+python -B af3.py install-gui
 af3_gui
 ```
+
+需要通过清华 TUNA 镜像安装时，将创建环境的命令替换为 `conda env create -f environment_THUmirrors.yml`；两种方式二选一。镜像说明见[安装指南](docs/usage.zh-CN.md#下载和安装)。
 
 实际预测需要 **Linux＋Slurm**、自行取得的 AF3 容器、模型参数、数据库和 GPU 分区；GUI 需要 **X11 转发**。[安装、配置、首次预览、提交、硬件参考和故障排查](docs/usage.zh-CN.md)从创建环境开始说明。公开 `config.example.json` 仅含占位符，真实配置请放在仓库外。
 
@@ -31,7 +33,7 @@ af3_gui
 
 当前版本 **0.1.0（预发布）**。[Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227)：**191 项测试全部通过，0 跳过**。[验收记录](docs/validation.md)列出实际完成的检查及待验证事项；真实 Slurm／AF3 运行、全新 Linux Conda 安装、GPU 容量和跨集群兼容性仍需部署验收。本仓库不分发 AF3 引擎、权重、数据库或课题数据。
 
-## 作者、开发方式与来源
+## 作者、许可与引用
 
 本项目代码利用 **Kimi-K3 和 GPT-6**，通过 AI 辅助的 **vibe coding** 方式完成。项目作者：**PKU-Gaolab, Ming-Ao Lu**。可通过 Issues／Pull requests 反馈问题或提交修改，请先脱敏日志和截图；开发检查见[指南](docs/usage.zh-CN.md#开发与反馈)。
 

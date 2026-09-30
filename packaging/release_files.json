@@ -56,8 +56,8 @@
     "docs/validation-results.json",
     "docs/validation.md",
     "environment.yml",
+    "environment_THUmirrors.yml",
     "fonts/wqy-microhei.ttc",
-    "install_command.py",
     "merge_gui.py",
     "packaging/audit_release.py",
     "packaging/build_release.py",
@@ -129,8 +129,8 @@
     "docs/validation-results.json",
     "docs/validation.md",
     "environment.yml",
+    "environment_THUmirrors.yml",
     "fonts/wqy-microhei.ttc",
-    "install_command.py",
     "requirements.txt"
   ]
 }

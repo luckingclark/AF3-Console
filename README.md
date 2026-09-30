@@ -6,7 +6,7 @@ Beyond AlphaFold 3–based batch interaction screening (Pulldown), AF3 Console i
 
 Building on fixed-length sliding windows (Window Scan), the project introduces PAE Domain Windows to help reduce false positives caused by artificial truncation. Fixed windows can cut through a domain and disrupt its fold: for example, after a native β strand is removed, a fragment of another protein might occupy its place in a prediction, producing a high-scoring apparent interaction dependent on the truncation boundary. AF3 Console therefore reuses the domain-segmentation logic of ChimeraX **Color PAE Domains**. It groups residues with relatively well-determined positions with respect to one another, using PAE from a monomer prediction, into candidate structural units and constructs scanning fragments from them. This aims to preserve structural integrity and reduce arbitrary domain splitting without requiring existing domain annotations. The strategy provides a structural basis for fragmentation; whether it actually reduces false positives still requires systematic comparison and experimental validation.
 
-A bilingual desktop and command-line workbench for preparing, submitting, monitoring and reviewing AlphaFold 3 workflows on Slurm clusters. Project author: **PKU-Gaolab, Ming-Ao Lu**.
+A bilingual desktop and command-line workbench for preparing, submitting, monitoring and reviewing AlphaFold 3 workflows on Slurm clusters.
 
 ## Workflows
 
@@ -21,9 +21,11 @@ Download **Code → Download ZIP** and unpack the software into a directory acce
 ```bash
 conda env create -f environment.yml
 conda activate af3-console
-python -B install_command.py
+python -B af3.py install-gui
 af3_gui
 ```
+
+To install through the Tsinghua TUNA mirrors, replace the environment-creation command with `conda env create -f environment_THUmirrors.yml`; choose one file, not both. See the [installation guide](docs/usage.en.md#download-and-install) for mirror details.
 
 Real predictions require **Linux + Slurm**, a separately obtained AF3 container, model parameters and databases, and a configured GPU partition. The GUI needs **X11 forwarding**. Complete [installation, configuration, first preview, submission, hardware reference and troubleshooting](docs/usage.en.md) instructions start from environment creation. The public `config.example.json` contains placeholders; keep your real configuration outside the repository.
 
@@ -31,7 +33,7 @@ Real predictions require **Linux + Slurm**, a separately obtained AF3 container,
 
 Version **0.1.0 — pre-release**. [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35967066227): **191 tests passed, 0 skipped**. See the [validation record](docs/validation.md) for checks performed and remaining gaps. Real Slurm/AF3 execution, a fresh Linux Conda installation, GPU capacity and cross-cluster compatibility still require deployment validation. This repository does not distribute AF3, weights, databases or research datasets.
 
-## Author, development and provenance
+## Author, licensing and citation
 
 This project's code was developed through AI-assisted **vibe coding using Kimi-K3 and GPT-6**. Project author: **PKU-Gaolab, Ming-Ao Lu**. Report issues or propose focused changes after sanitizing logs and screenshots; development checks are documented in the [guide](docs/usage.en.md#development). 
 
