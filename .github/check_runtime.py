@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / 'AF3_Console'
 RUNTIME = ('af3_gui', 'af3.py', 'af3_runtime.py', 'af3_pae.py',
            'af3_msa_sync.py', 'af3_pae_domains.py', 'af3_networkx_community.py',
-           'fonts/wqy-microhei.ttc', 'install_command.py')
+           'fonts/wqy-microhei.ttc')
 
 
 def check(source):
@@ -36,7 +36,8 @@ def check(source):
     for name, text in audit_release.decoded_gui(APP / 'af3_gui').items():
         assert text == (source / name).read_text(encoding='utf-8'), name
     assert (APP / 'config.example.json').read_bytes() == (source / 'config.example.json').read_bytes()
-    assert (ROOT / 'environment.yml').read_bytes() == (source / 'environment.yml').read_bytes()
+    for name in ('environment.yml', 'environment_THUmirrors.yml'):
+        assert (ROOT / name).read_bytes() == (source / name).read_bytes()
     assert not (APP / 'config.json').exists()
     assert not (APP / 'site_config.json').exists()
     for path in ROOT.rglob('*.md'):

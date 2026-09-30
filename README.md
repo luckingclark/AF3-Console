@@ -43,13 +43,30 @@ The repository contains the workbench, not the AF3 engine, model weights, databa
 
 ## Download and install
 
-Select the **main** branch, choose **Code → Download ZIP**, and unpack it into your cluster software directory. Keep the entire extracted folder, including fonts and licenses. Run these commands in a **Bash shell**, from the extracted directory containing `environment.yml`:
+Select the **main** branch, choose **Code → Download ZIP**, and unpack it.
+
+**Only deploying the application?** Transfer the complete `AF3_Console/` folder plus **one** environment file (`environment.yml` or `environment_THUmirrors.yml`) to the cluster, keeping the environment file beside that folder. Keep everything inside `AF3_Console/`, including `fonts/`, `LICENSES/` and the third-party notices. `docs/`, `.github/`, `.gitattributes`, `.gitignore` and `CITATION.cff` are not needed at runtime; the guides and citation information remain available on GitHub. The root README and LICENSE are repository documentation; the application folder already contains its applicable licenses. Downloading the whole ZIP is also fine. No file needs to be deleted from an existing installation.
+
+In a **Bash shell**, from the directory containing the environment files and `AF3_Console/`, create the environment with the default channels:
 
 ```bash
 conda env create -f environment.yml
+```
+
+Or use [environment_THUmirrors.yml](environment_THUmirrors.yml) to download dependencies through the **Tsinghua University TUNA mirrors**, if that route works better for your network. Run **one** environment-creation command, not both:
+
+```bash
+conda env create -f environment_THUmirrors.yml
+```
+
+Both files create `af3-console` with the same dependency version constraints. The mirror file uses the TUNA conda-forge and bioconda channels with `nodefaults`; no global `.condarc` edit is required. See the [TUNA instructions](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/). Mirror availability and installation on your cluster still need verification; if the mirror is unavailable, use `environment.yml`. If your existing environment works, skip creation and activate it directly.
+
+After creating the environment with either file, continue:
+
+```bash
 conda activate af3-console
 cd AF3_Console
-python -B install_command.py
+python -B af3.py install-gui
 ```
 
 ### Minimal offline check
@@ -72,15 +89,14 @@ AF3 Console 0.1.0
 
 ### Open the GUI
 
-Already using the first GitHub version? Update only `af3_gui` and add `install_command.py`; see the [upgrade checklist](docs/usage.en.md#upgrade-from-the-first-github-version).
-
-The installer above registers `af3_gui` in the active environment once. After `conda activate af3-console`, you can run it from **any directory**, including a new SSH session:
+The one-time registration above prints `Installed: .../bin/af3_gui`. On later launches, including new SSH sessions, activate the environment and start the GUI from **any directory**:
 
 ```bash
+conda activate af3-console
 af3_gui
 ```
 
-Keep the extracted application folder in place. After moving or upgrading it, run `python -B install_command.py` from the new `AF3_Console/` directory to update the command. No administrator access or shell startup edits are needed.
+Keep the application folder in place. If you move it, run `python -B af3.py install-gui` once from its new directory. No separate installer script or administrator access is needed.
 
 Success at this stage means the main window opens and **Settings** and **Help → About** are accessible. AF3 resources can be configured afterward. If the display cannot open, check X11 forwarding; see [troubleshooting](docs/usage.en.md#troubleshooting).
 
@@ -113,14 +129,6 @@ Paths below use the default work directory. Configuration can change them; the s
 | `iptm_profile.csv`, `report.md` | Additional Scan summaries for reviewing scores along the original sequence coordinates. |
 
 Missing results, failed tasks or a partial ranking are not a completed screen. See [results and upgrades](docs/usage.en.md#results-and-upgrades) for retrieval and follow-up commands.
-
-## Validation and scope
-
-The 2026-09-30 import update passed 194 local Windows tests, with one platform-specific symlink test skipped. Its four new tests cover importing, editing, saving and reading personal settings in a fresh process.
-
-The previous [Linux CI](https://github.com/luckingclark/AF3-Console/actions/runs/35969165333) passed the deployment checks and **191 tests, with 0 skipped**, using Python 3.12 on Ubuntu 24.04. Checks include runtime/source consistency, isolated startup, offline licenses, artificial data and mocked scheduling. They do not establish successful execution of a real AF3 prediction on your cluster.
-
-Real Slurm/AF3 execution, a fresh Linux Conda installation, interactive X11 use, GPU token limits and cross-cluster compatibility still require deployment validation. See the [validation record](https://github.com/luckingclark/AF3-Console/blob/56059d3188ecc0c278edeee118badd10535b765c/docs/validation.md). No performance advantage over the [related tools](docs/comparison.md) is claimed.
 
 ## Author, licensing and citation
 

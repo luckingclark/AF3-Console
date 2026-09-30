@@ -5020,6 +5020,13 @@ def _validate_args(args):
         fragment_windows(1,args.win,args.overlap,args.min_frag,args.split_threshold)
 
 
+def cmd_install_gui(_args):
+    command = R.install_gui_command(Path(__file__).parent)
+    print('Installed: ' + str(command))
+    print('With this environment active, run af3_gui from any directory.')
+    print('After moving the application, rerun python -B af3.py install-gui from its new directory.')
+
+
 def build_parser():
     p = argparse.ArgumentParser(
         description="af3.py - AlphaFold 3 统一提交脚本(MSA / Infer / Rank)",
@@ -5027,6 +5034,11 @@ def build_parser():
         epilog=__doc__)
     p.add_argument("--version", action="version", version="AF3 Console " + R.VERSION)
     sub = p.add_subparsers(dest="command")
+
+    installer = sub.add_parser('install-gui',
+        help='Register the af3_gui command in the active Conda/venv environment',
+        description='Run once on Linux after activating your environment. No AF3 resources or X11 required.')
+    installer.set_defaults(func=cmd_install_gui)
 
     sp = sub.add_parser("run", help="预测:默认 MSA->infer 端到端(--msa-only/--infer-only 控制阶段)",
                         formatter_class=argparse.RawDescriptionHelpFormatter,

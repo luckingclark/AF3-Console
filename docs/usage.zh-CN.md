@@ -2,26 +2,42 @@
 
 [English](usage.en.md) · [首页](README.zh-CN.md) · [输入规范](#输入规范)
 
-对应 **0.1.0，2026-09-30 部署版**。从仓库根目录安装环境，再进入 `AF3_Console/` 安装一次启动命令。请整套下载当前 main，勿与 9 月 12 日旧五文件包混用。
+对应 **0.1.0，2026-09-30 部署版**。从仓库根目录安装环境，再进入 `AF3_Console/` 注册一次 GUI 启动命令。请使用当前 main 的部署文件，勿与 9 月 12 日旧五文件包混用。
 
 ## 安装前需要什么
 
 实际预测需要已有的 **Linux Slurm 集群、AF3 Singularity 容器、模型参数、数据库以及 GPU 资源**。程序、Python 环境和工作目录必须能被计算节点访问。桌面窗口通过 X11 转发显示。
 
-这个仓库提供 UI 和调度脚本，不包含 AF3 引擎、模型参数、数据库、GPU 驱动或完整 Python 环境。打开界面、阅读帮助不需要配置完整集群；正式提交前会检查资源。不同集群和旧版 Linux 的兼容性须分别验证，详见[验收记录](https://github.com/luckingclark/AF3-Console/blob/56059d3188ecc0c278edeee118badd10535b765c/docs/validation.md)。
+这个仓库提供 UI 和调度脚本，不包含 AF3 引擎、模型参数、数据库、GPU 驱动或完整 Python 环境。打开界面、阅读帮助不需要配置完整集群；正式提交前会检查资源。不同集群和旧版 Linux 的兼容性须分别验证，详见[验收记录](https://github.com/luckingclark/AF3-Console/blob/5ce05ca1dde5c019826775f57ad3edaa96e4d663/docs/validation.md)。
 
 ## 下载和安装
 
-保持分支为 **main**，点击 **Code → Download ZIP**，将解压后的整个目录上传至登录节点和计算节点都能访问的位置。默认下载已是部署版，不需要 source 分支。尚未创建正式 Release；仍需安装 Python 依赖。
+保持分支为 **main**，点击 **Code → Download ZIP**，解压后部署到登录节点和计算节点都能访问的位置。默认下载已是部署版，不需要 source 分支。尚未创建正式 Release；仍需安装 Python 依赖。
+
+**只部署程序时可以精简：**将完整的 `AF3_Console/` 文件夹，加上**一个**环境文件（`environment.yml` 或 `environment_THUmirrors.yml`）上传到集群，环境文件与该文件夹放在同一级。保留 `AF3_Console/` 内全部内容，包括 `fonts/`、`LICENSES/` 和第三方声明。`docs/`、`.github/`、`.gitattributes`、`.gitignore` 和 `CITATION.cff` 不参与运行，说明文档和引用信息可在 GitHub 阅读。根目录 README 和 LICENSE 用于仓库说明；程序文件夹内已附适用许可证。整包下载同样可用，无需删除现有安装中的任何文件。
+
 
 在解压后的仓库根目录中执行：
 
 ```bash
 conda env create -f environment.yml
+```
+
+如果清华镜像更适合你的网络，可改用 [environment_THUmirrors.yml](../environment_THUmirrors.yml)，从**清华大学 TUNA 镜像**下载依赖。两个创建环境的命令**二选一**，不要重复执行：
+
+```bash
+conda env create -f environment_THUmirrors.yml
+```
+
+两份文件创建的环境都叫 `af3-console`，依赖版本约束相同。镜像文件使用 TUNA 的 conda-forge、bioconda 频道和 `nodefaults`，无需修改全局 `.condarc`；参见[清华镜像说明](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)。镜像可用性及你所在集群的安装仍需验证；镜像不可用时可改用 `environment.yml`。已有可用环境的用户跳过创建，直接激活即可。
+
+任选一种方式创建环境后，继续执行：
+
+```bash
 conda activate af3-console
 cd AF3_Console
 python -B af3.py --version
-python -B install_command.py
+python -B af3.py install-gui
 ```
 
 也可以使用系统支持的 Python 3.12：
@@ -31,14 +47,14 @@ python -m venv /path/to/your/af3-console-env
 source /path/to/your/af3-console-env/bin/activate
 python -m pip install "PySide6>=6.6,<7" "numpy>=1.26,<3" "pandas>=2.2,<4" "matplotlib>=3.8,<4" "six>=1.16,<2" "python-dateutil>=2.9,<3" "zstandard>=0.23,<1" "qtawesome>=1.3,<2"
 cd /path/to/your/af3-console/AF3_Console
-python -B install_command.py
+python -B af3.py install-gui
 ```
 
 集群优先采用 Conda。仓库声明依赖范围，不分发开发者完整环境或私人软件源地址；实际验证的依赖版本记录在验收文档中。
 
-安装脚本会将 `af3_gui` 注册到当前 Conda 环境（或 venv）。在包含 `af3_gui` 的程序目录运行一次即可；以后激活该环境，就能在任意目录输入 `af3_gui`。启动时保留当前目录，并使用该环境的 Python；无需修改 `.bashrc`，也不需要管理员权限。同名的其他程序不会被覆盖。
+`python -B af3.py install-gui` 只需执行一次，用于将 `af3_gui` 注册到当前 Conda 环境（或 venv）。显示 `Installed: .../bin/af3_gui` 表示注册成功；之后激活环境，就能在任意目录执行 `af3_gui`。无需单独的安装脚本、管理员权限或修改 `.bashrc`。命令使用该环境的 Python，保留调用目录，且不会覆盖同名的其他程序。搬动程序后，在新程序目录重新运行这一步；`command -v af3_gui` 应指向当前环境。
 
-搬动或升级程序后，在新程序目录重新执行 `python -B install_command.py` 更新命令。程序目录和环境仍需对计算节点可见；尚有排队或运行作业引用旧安装时，不要删除旧目录。若 Bash 缓存了旧命令，可执行 `hash -r`；`command -v af3_gui` 应显示当前环境下的 `bin/af3_gui`。
+程序目录和 Python 环境必须能被计算节点访问。尚有排队或运行作业引用旧安装时，不要删除旧目录。
 
 ## 配置资源
 
@@ -115,7 +131,7 @@ af3_gui
 
 ## 第一次预览与提交
 
-`af3_gui` 可在任意目录启动；下方 `python -B af3.py ...` 命令行示例仍需在包含 `af3.py` 的程序目录执行。
+注册后的 `af3_gui` 可从任意目录启动。下方 `python -B af3.py ...` 示例仍需激活环境，并在程序目录执行。
 
 下面所有 `P12345`、`Q12345` 都是**语法占位符**，没有指定生物学对象，也不保证长度或突变位点有效。正式使用前替换为自己的输入：
 
@@ -138,21 +154,6 @@ python -B af3.py retry --spec /path/to/your/batch/spec.json
 更多文件输入示例见 [输入规范](#输入规范)，完整参数说明见 UI 帮助页。
 
 ## 结果、升级与故障处理
-
-### 从最初的 GitHub 版本升级到当前启动方式
-
-已核对最初 GitHub 源码快照 `03c29106fd23b20928c9591b35b22b2508c9adfd`：六个计算／运行支持模块和字体与当前版本一致。本次只需从最新 main 的 `AF3_Console/` 中取得：
-
-| 文件 | 操作与用途 |
-|---|---|
-| `af3_gui` | 替换旧文件，获得设置页导入配置等界面更新。 |
-| `install_command.py` | 新增文件，用于安装环境内的 `af3_gui` 命令。 |
-
-将这两个文件放到现有 `af3.py` 所在的同一目录。最初仓库版本的脚本可能在解压根目录，不必为了升级强制搬动已有目录。关闭旧 GUI，保留旧 `af3_gui` 副本后再替换；不要删除配置、任务快照、MSA、模型、数据库或许可证。
-
-在该程序目录激活原来的 `af3-console` 环境，运行一次 `python -B install_command.py`；此后从任意目录执行 `af3_gui`。依赖声明没有变化，已有可用环境无需重建。只想更新说明时，可另外查看新版 README 和本指南。
-
-此两文件更新适用于**最初上传 GitHub 的版本**。如果手上是更早的 **9 月 12 日五文件 ZIP**，请下载完整 main，因为它缺少目前所需的独立模块及许可证。
 
 默认批次输出在 `~/AF3/output/`，共享 MSA 池在 `~/AF3/msa_data/`，全长推理池在 `~/AF3/infer_data/`。结果保存在集群；复制界面显示的目录后，用 SFTP 下载。关闭窗口不会取消已提交的 Slurm 作业。
 
